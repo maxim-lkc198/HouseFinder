@@ -33,6 +33,34 @@ public class User {
     // Constructors
     public User() {}
 
+    public User(long id, String username, String email, String password, String firstName, String lastName, String phoneNumber, Date dob, String address, String idCardNumber, Date idCardIssueDate, String idCardIssuePlace, String idCardFrontUrl, String idCardBackUrl, String verificationStatus, String avatarUrl, boolean isActive, String passwordResetToken, LocalDateTime passwordResetTokenExpiry, BigDecimal accountBalance, int roleId, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.dob = dob;
+        this.address = address;
+        this.idCardNumber = idCardNumber;
+        this.idCardIssueDate = idCardIssueDate;
+        this.idCardIssuePlace = idCardIssuePlace;
+        this.idCardFrontUrl = idCardFrontUrl;
+        this.idCardBackUrl = idCardBackUrl;
+        this.verificationStatus = verificationStatus;
+        this.avatarUrl = avatarUrl;
+        this.isActive = isActive;
+        this.passwordResetToken = passwordResetToken;
+        this.passwordResetTokenExpiry = passwordResetTokenExpiry;
+        this.accountBalance = accountBalance;
+        this.roleId = roleId;
+        this.role = role;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+    
+    
     public long getId() {
         return id;
     }

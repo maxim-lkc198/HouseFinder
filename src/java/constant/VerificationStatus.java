@@ -4,10 +4,11 @@
  */
 package constant;
 
-/**
- *
- * @author Maxim
- */
-public class VerificationStatus {
+public final class VerificationStatus {
+    public static final String NOT_VERIFIED = "NOT_VERIFIED";
+    public static final String PENDING = "PENDING";
+    public static final String VERIFIED = "VERIFIED";
+    public static final String REJECTED = "REJECTED";
     
+    private VerificationStatus() {}
 }
