@@ -17,14 +17,12 @@ public class DBContext {
     try (InputStream input = DBContext.class.getClassLoader().getResourceAsStream("util/db.properties")) {
         if (input == null) {
             System.err.println("!!! FATAL ERROR: util/db.properties NOT FOUND ON CLASSPATH !!!");
-            // Hoặc dùng Logger
-            // LOGGER.log(Level.SEVERE, "!!! FATAL ERROR: util/db.properties NOT FOUND ON CLASSPATH !!!");
         } else {
             dbProperties.load(input);
             dbDriver = dbProperties.getProperty("db.driver");
             dbUrl = dbProperties.getProperty("db.url");
             dbUser = dbProperties.getProperty("db.username");
-            dbPassword = dbProperties.getProperty("db.password"); // CẨN THẬN KHI LOG MẬT KHẨU
+            dbPassword = dbProperties.getProperty("db.password"); 
 
             System.out.println("DBContext: Loaded driver: " + dbDriver);
             System.out.println("DBContext: Loaded URL: " + dbUrl);
@@ -47,7 +45,7 @@ public class DBContext {
         return DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
-    // Main method for testing connection (optional)
+    // Main method for testing connection 
     public static void main(String[] args) {
         try {
             Connection conn = getConnection();
