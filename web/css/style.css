@@ -1,81 +1,177 @@
+/* ================= Google Fonts ================= */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+/* ================= CSS Variables ================= */
+:root {
+    --primary-color: #E03C31; /* Màu đỏ chủ đạo từ logo batdongsan */
+    --primary-color-dark: #C62828;
+    --text-color: #333;
+    --text-color-light: #757575;
+    --border-color: #E0E0E0;
+    --body-bg-color: #F8F9FA;
+    --container-bg-color: #FFFFFF;
+    --font-family: 'Roboto', sans-serif;
+}
+
+/* ================= Global Styles ================= */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f6;
+    font-family: var(--font-family);
+    background-color: var(--body-bg-color);
+    color: var(--text-color);
     margin: 0;
-    padding: 20px;
+    line-height: 1.6;
+}
+
+/* ================= Header/Navbar ================= */
+.main-header {
+    background-color: var(--container-bg-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo a {
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: var(--text-color);
+    margin: 0 1rem;
+    font-weight: 500;
+}
+
+.header-actions .btn {
+    text-decoration: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    margin-left: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: 1px solid var(--primary-color);
+}
+.btn-primary:hover {
+    background-color: var(--primary-color-dark);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+/* ================= Auth Form Layout ================= */
+.auth-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 90vh;
+    min-height: 80vh;
+    padding: 2rem;
 }
-.container {
-    background-color: #ffffff;
-    padding: 30px;
+
+.auth-form-wrapper {
+    display: flex;
+    background-color: var(--container-bg-color);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 900px;
     width: 100%;
-    max-width: 400px;
+    overflow: hidden;
 }
-h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
+
+.auth-image-panel {
+    flex: 1;
+    background: url('../images/auth-bg.jpg') no-repeat center center; /* Thay bằng ảnh của bạn */
+    background-size: cover;
+    min-width: 300px;
 }
-label {
+
+.auth-form-panel {
+    flex: 1.5;
+    padding: 2.5rem 3rem;
+}
+
+.auth-form-panel h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form-panel .subtitle {
+    color: var(--text-color-light);
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
     display: block;
-    margin-bottom: 8px;
-    color: #555;
-    font-weight: bold;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
 }
-input[type="text"],
-input[type="password"] {
-    width: calc(100% - 22px); /* Account for padding and border */
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; /* So padding doesn't add to width */
+
+.form-group .input-wrapper {
+    position: relative;
 }
-button {
+
+.form-group .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-color-light);
+}
+
+.form-group input {
     width: 100%;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+    padding: 0.8rem 1rem 0.8rem 2.5rem; /* Padding cho icon */
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-group .input-hint {
+    font-size: 0.8rem;
+    color: var(--text-color-light);
+    margin-top: 0.3rem;
+}
+
+.form-submit-btn {
+    width: 100%;
+    padding: 0.9rem;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s;
 }
-button:hover {
-    background-color: #0056b3;
+.form-submit-btn:hover {
+    background-color: var(--primary-color-dark);
 }
+
 .error-message {
-    color: #d9534f;
-    background-color: #f2dede;
-    border: 1px solid #ebccd1;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 15px;
+    background-color: #F8D7DA;
+    color: #721C24;
+    padding: 1rem;
+    border: 1px solid #F5C6CB;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.auth-switch {
     text-align: center;
-}
-.success-message {
-    color: #3c763d;
-    background-color: #dff0d8;
-    border: 1px solid #d6e9c6;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 15px;
-    text-align: center;
-}
-p {
-    text-align: center;
-    margin-top: 20px;
-}
-a {
-    color: #007bff;
-    text-decoration: none;
-}
-a:hover {
-    text-decoration: underline;
+    margin-top: 1.5rem;
 }

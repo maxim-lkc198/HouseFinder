@@ -8,7 +8,8 @@ public class User {
     private long id;
     private String username;
     private String email;
-    private String password;
+    private String password; 
+// This will hold the plain text password only temporarily before hashing
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -26,7 +27,7 @@ public class User {
     private LocalDateTime passwordResetTokenExpiry;
     private BigDecimal accountBalance;
     private int roleId;
-    private Role role;
+    private Role role; // To hold the joined Role object
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -233,6 +234,7 @@ public class User {
         return role;
     }
 
+    // roleId is useful for inserts/updates without needing the full Role object
     public void setRole(Role role) {
         this.role = role;
     }

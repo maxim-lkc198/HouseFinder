@@ -13,19 +13,27 @@ import util.DBContext;
 
 public class RoleDao {
 
+    /**
+     * Gets a Role object from the database by its name.
+     * @param roleName The name of the role (e.g., "ROLE_USER").
+     * @return A Role object if found, otherwise null.
+     */
     public Role getRoleByName(String roleName) {
-        String sql = "SELECT * FROM roles WHERE name = ?";
+        String sql = "SELECT id, name FROM roles WHERE name = ?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, roleName);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new Role(rs.getInt("id"), rs.getString("name"));
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    return new Role(id, name);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle exceptions properly
+            System.err.println("RoleDao - getRoleByName Error: " + e.getMessage());
+            e.printStackTrace();
         }
         return null;
     }

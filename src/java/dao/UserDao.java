@@ -11,7 +11,6 @@ import java.util.List;
 import model.Role;
 import model.User;
 import util.DBContext;
-import util.PasswordUtil;
 
 public class UserDao {
 
@@ -114,7 +113,6 @@ public class UserDao {
             
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getEmail());
-            ps.setString(3, PasswordUtil.hashPassword(user.getPassword())); // Hash mật khẩu
             ps.setString(4, user.getFirstName());
             ps.setString(5, user.getLastName());
             ps.setString(6, user.getPhoneNumber());

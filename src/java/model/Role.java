@@ -4,17 +4,22 @@
  */
 package model;
 
-public class Role {
+import java.io.Serializable;
+
+public class Role implements Serializable {
     private int id;
     private String name;
 
     // Constructors
-    public Role() {}
+    public Role() {
+    }
+
     public Role(int id, String name) {
         this.id = id;
         this.name = name;
     }
-    
+
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -31,4 +36,8 @@ public class Role {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Role{" + "id=" + id + ", name='" + name + '\'' + '}';
+    }
 }
