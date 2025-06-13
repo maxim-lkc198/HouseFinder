@@ -10,7 +10,6 @@
 <html>
 <head>
     <%-- Include header chứa các thẻ meta, link CSS, Font Awesome, Google Fonts --%>
-    <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
     <title>FindHouse - Nền Tảng Tìm Kiếm Nhà Cho Thuê</title>
     <%-- CSS riêng cho trang chủ nếu cần --%>
     <style>
@@ -204,6 +203,5 @@
         </section>
     </main>
     
-    <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
 </body>
 </html>

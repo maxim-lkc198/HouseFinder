@@ -18,7 +18,7 @@ import dao.ProvinceDao;
 import model.Category;
 import model.Province;
 
-@WebServlet(name = "HomeServlet", urlPatterns = {"/home", ""}) // Ánh xạ với cả root
+@WebServlet(name = "HomeServlet", urlPatterns = {"/home", ""}) 
 public class HomeServlet extends HttpServlet {
     
     // Khởi tạo các DAO cần thiết. Trong ứng dụng thực tế, nên dùng cơ chế tốt hơn là new trực tiếp.
@@ -29,7 +29,8 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+            System.out.println("HomeServlet: doGet() called."); // Dòng debug 1
+
         try {
             // Lấy một vài bài đăng mới nhất để hiển thị ở phần "Tin nổi bật"
             // Giả sử có một phương thức getRecentPosts trong PostDao
@@ -38,7 +39,8 @@ public class HomeServlet extends HttpServlet {
             // Lấy danh sách Provinces và Categories cho search box
             List<Province> provinces = provinceDao.getAllProvinces();
             List<Category> categories = categoryDao.getAllCategories();
-            
+            System.out.println("HomeServlet: Data prepared. Forwarding to home.jsp..."); // Dòng debug 2
+
             // Đặt dữ liệu vào request để JSP có thể truy cập
             // request.setAttribute("recentPosts", recentPosts);
             request.setAttribute("provinces", provinces);
@@ -47,11 +49,12 @@ public class HomeServlet extends HttpServlet {
             // Forward đến trang home.jsp
             request.getRequestDispatcher("/WEB-INF/jsp/home.jsp").forward(request, response);
             
-        } catch (Exception e) {
-            // Xử lý lỗi nếu có
-            e.printStackTrace();
-            // Có thể chuyển hướng đến trang lỗi
-            // request.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(request, response);
+         } catch (Exception e) {
+            System.err.println("HomeServlet: CRITICAL ERROR - An exception occurred!");
+            e.printStackTrace(); // In lỗi ra console log của server
+            // Chuyển đến trang lỗi
+            request.setAttribute("errorMessage", "An internal error occurred while loading the home page.");
+            request.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(request, response);
         }
     }
 }
