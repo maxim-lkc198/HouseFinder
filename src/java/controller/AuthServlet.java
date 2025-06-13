@@ -11,12 +11,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.User;
 import service.AuthService;
 import service.impl.AuthServiceImpl;
+import util.PasswordUtil;
+import dao.UserDao;
+import constant.RoleName;
 
-// Ánh xạ servlet này với các URL liên quan đến xác thực
-@WebServlet(name = "AuthServlet", urlPatterns = {"/register", "/login", "/logout"})
+@WebServlet(name = "AuthServlet", urlPatterns = {"/register", "/login", "/logout", "/forgot-password", "/reset-password"})
 public class AuthServlet extends HttpServlet {
 
     private final AuthService authService = new AuthServiceImpl();
@@ -31,21 +34,26 @@ public class AuthServlet extends HttpServlet {
                 showRegisterPage(request, response);
                 break;
             case "/login":
-                // showLoginPage(request, response); // Sẽ được viết sau
+                showLoginPage(request, response);
                 break;
             case "/logout":
-                // processLogout(request, response); // Sẽ được viết sau
+                processLogout(request, response);
+                break;
+            case "/forgot-password":
+                showForgotPasswordPage(request, response);
+                break;
+            case "/reset-password":
+                showResetPasswordPage(request, response);
                 break;
             default:
-                // Handle default case or error
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                break;
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         String action = request.getServletPath();
 
         switch (action) {
@@ -53,73 +61,196 @@ public class AuthServlet extends HttpServlet {
                 processRegister(request, response);
                 break;
             case "/login":
-                // processLogin(request, response); // Sẽ được viết sau
+                processLogin(request, response);
+                break;
+            case "/forgot-password":
+                processForgotPassword(request, response);
+                break;
+            case "/reset-password":
+                processResetPassword(request, response);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                break;
         }
     }
 
+    // ========== REGISTER LOGIC ========================================
+
     private void showRegisterPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/jsp/auth/register.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step1_email.jsp").forward(request, response);
+    }
+    
+    private void processRegister(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        String subAction = request.getParameter("action");
+        if ("checkEmail".equals(subAction)) {
+            processCheckEmail(request, response);
+        } else if ("processRegistration".equals(subAction)) {
+            processFinalRegistration(request, response);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/register");
+        }
     }
 
-    private void processRegister(HttpServletRequest request, HttpServletResponse response)
+    private void processCheckEmail(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8"); // Đảm bảo đọc được tiếng Việt
-
-        // Lấy tất cả tham số từ form
-        String username = request.getParameter("username");
         String email = request.getParameter("email");
+        if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            request.setAttribute("errorMessage", "Email không hợp lệ.");
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step1_email.jsp").forward(request, response);
+            return;
+        }
+        // Tái sử dụng DAO để kiểm tra (tốt hơn là qua service)
+        if (new UserDao().getUserByEmail(email) != null) {
+            request.setAttribute("errorMessage", "Email này đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.");
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step1_email.jsp").forward(request, response);
+            return;
+        }
+        request.setAttribute("email", email);
+        request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step2_details.jsp").forward(request, response);
+    }
+
+    private void processFinalRegistration(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String email = request.getParameter("email");
+        String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String phoneNumber = request.getParameter("phoneNumber");
 
-        // --- VALIDATION PHÍA SERVER ---
-        // 1. Kiểm tra mật khẩu khớp nhau
+        // Server-side validation
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("errorMessage", "Passwords do not match.");
-            showRegisterPage(request, response);
+            request.setAttribute("errorMessage", "Mật khẩu xác nhận không khớp.");
+            request.setAttribute("email", email);
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step2_details.jsp").forward(request, response);
             return;
         }
-
-        // 2. Kiểm tra độ mạnh mật khẩu (ví dụ đơn giản)
         if (password.length() < 8) {
-            request.setAttribute("errorMessage", "Password must be at least 8 characters long.");
-            showRegisterPage(request, response);
+            request.setAttribute("errorMessage", "Mật khẩu phải có ít nhất 8 ký tự.");
+            request.setAttribute("email", email);
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step2_details.jsp").forward(request, response);
             return;
         }
-        
-        // (Thêm các validation khác nếu cần: định dạng email, username...)
 
-        // Tạo đối tượng User
         User user = new User();
-        user.setUsername(username);
         user.setEmail(email);
-        user.setPassword(password); // Truyền mật khẩu thô, Service/DAO sẽ hash
+        user.setUsername(username);
+        user.setPassword(password);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setPhoneNumber(phoneNumber);
         
-        // Gọi Service để đăng ký
         try {
             boolean success = authService.registerUser(user);
             if (success) {
-                // Đăng ký thành công, chuyển hướng về trang login với thông báo
-                response.sendRedirect(request.getContextPath() + "/login?register=success");
+                request.getSession().setAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
+                response.sendRedirect(request.getContextPath() + "/login");
             } else {
-                // Lỗi không xác định từ service
-                request.setAttribute("errorMessage", "An unexpected error occurred. Please try again.");
-                showRegisterPage(request, response);
+                request.setAttribute("errorMessage", "Đã có lỗi không mong muốn xảy ra.");
+                request.setAttribute("email", email);
+                request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step2_details.jsp").forward(request, response);
             }
         } catch (IllegalArgumentException e) {
-            // Bắt lỗi nghiệp vụ từ Service (username/email đã tồn tại)
             request.setAttribute("errorMessage", e.getMessage());
-            showRegisterPage(request, response);
+            request.setAttribute("email", email);
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step2_details.jsp").forward(request, response);
+        }
+    }
+    
+    // ========== LOGIN & LOGOUT LOGIC ========================================
+
+    private void showLoginPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("successMessage") != null) {
+            request.setAttribute("successMessage", session.getAttribute("successMessage"));
+            session.removeAttribute("successMessage");
+        }
+        request.getRequestDispatcher("/WEB-INF/jsp/auth/login.jsp").forward(request, response);
+    }
+
+    private void processLogin(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        User user = authService.loginUser(username, password);
+
+        if (user != null) {
+            HttpSession session = request.getSession();
+            session.setAttribute("loggedInUser", user);
+            
+            if (RoleName.ADMIN.equals(user.getRole().getName())) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/home");
+            }
+        } else {
+            request.setAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng, hoặc tài khoản đã bị khóa.");
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/login.jsp").forward(request, response);
+        }
+    }
+    
+    private void processLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        response.sendRedirect(request.getContextPath() + "/login?logout=true");
+    }
+    
+    // ========== FORGOT & RESET PASSWORD LOGIC =============================
+    
+    private void showForgotPasswordPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/jsp/auth/forgotPassword.jsp").forward(request, response);
+    }
+    
+    private void processForgotPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String email = request.getParameter("email");
+        authService.generatePasswordResetToken(email);
+        request.setAttribute("message", "Nếu email của bạn tồn tại, một hướng dẫn đặt lại mật khẩu đã được gửi.");
+        request.getRequestDispatcher("/WEB-INF/jsp/auth/forgotPassword.jsp").forward(request, response);
+    }
+    
+    private void showResetPasswordPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String token = request.getParameter("token");
+        User user = authService.validatePasswordResetToken(token);
+        
+        if (user != null) {
+            request.setAttribute("token", token);
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/resetPassword.jsp").forward(request, response);
+        } else {
+            request.setAttribute("errorMessage", "Đường link không hợp lệ hoặc đã hết hạn.");
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/forgotPassword.jsp").forward(request, response);
+        }
+    }
+    
+    private void processResetPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String token = request.getParameter("token");
+        String newPassword = request.getParameter("newPassword");
+        String confirmPassword = request.getParameter("confirmPassword");
+        
+        if (!newPassword.equals(confirmPassword)) {
+            request.setAttribute("errorMessage", "Mật khẩu xác nhận không khớp.");
+            request.setAttribute("token", token);
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/resetPassword.jsp").forward(request, response);
+            return;
+        }
+        if (newPassword.length() < 8) {
+            request.setAttribute("errorMessage", "Mật khẩu mới phải có ít nhất 8 ký tự.");
+            request.setAttribute("token", token);
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/resetPassword.jsp").forward(request, response);
+            return;
+        }
+        
+        boolean success = authService.resetPassword(token, newPassword);
+        
+        if (success) {
+            request.getSession().setAttribute("successMessage", "Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập.");
+            response.sendRedirect(request.getContextPath() + "/login");
+        } else {
+            request.setAttribute("errorMessage", "Đường link không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.");
+            request.getRequestDispatcher("/WEB-INF/jsp/auth/forgotPassword.jsp").forward(request, response);
         }
     }
 }

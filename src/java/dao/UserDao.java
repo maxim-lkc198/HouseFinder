@@ -256,4 +256,48 @@ public class UserDao {
         
         return user;
     }
+
+    public boolean savePasswordResetToken(long userId, String token, java.time.LocalDateTime expiryDate) {
+        String sql = "UPDATE users SET password_reset_token = ?, password_reset_token_expiry = ? WHERE id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, token);
+            ps.setTimestamp(2, java.sql.Timestamp.valueOf(expiryDate));
+            ps.setLong(3, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public User getUserByPasswordResetToken(String token) {
+        String sql = "SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.password_reset_token = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, token);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRowToUserWithRole(rs); // Tái sử dụng hàm mapRowToUser đã có
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updatePasswordAndInvalidateToken(long userId, String newHashedPassword) {
+        // Cập nhật mật khẩu và xóa token trong một câu lệnh để đảm bảo tính nguyên tử
+        String sql = "UPDATE users SET password = ?, password_reset_token = NULL, password_reset_token_expiry = NULL WHERE id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newHashedPassword);
+            ps.setLong(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

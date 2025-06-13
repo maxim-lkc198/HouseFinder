@@ -6,18 +6,42 @@ package service;
 
 import model.User;
 
-/**
- * Interface for Authentication related business logic.
- */
 public interface AuthService {
 
     /**
-     * Registers a new user in the system.
-     * @param user The User object containing registration details (username, email, plain password, etc.).
-     * @return true if registration is successful, false otherwise (e.g., username/email exists).
-     * @throws IllegalArgumentException if the provided user data is invalid.
+     * Registers a new user.
+     * @param user The User object from the registration form.
+     * @return true if successful.
+     * @throws IllegalArgumentException if username/email already exists.
      */
     boolean registerUser(User user) throws IllegalArgumentException;
 
-    // Các phương thức khác như login, forgot password sẽ được thêm sau.
+    /**
+     * Authenticates a user.
+     * @param username The username or email entered.
+     * @param password The plain text password entered.
+     * @return The authenticated User object if credentials are correct and user is active, otherwise null.
+     */
+    User loginUser(String username, String password);
+
+    /**
+     * Generates a password reset token and sends a reset link to the user's email.
+     * @param email The user's email address.
+     */
+    void generatePasswordResetToken(String email);
+    
+    /**
+     * Validates a password reset token.
+     * @param token The token from the reset link.
+     * @return The User object associated with the token if it's valid and not expired, otherwise null.
+     */
+    User validatePasswordResetToken(String token);
+    
+    /**
+     * Resets the user's password using a valid token.
+     * @param token The valid token.
+     * @param newPassword The new plain text password.
+     * @return true if the password was successfully reset.
+     */
+    boolean resetPassword(String token, String newPassword);
 }
