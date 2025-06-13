@@ -54,11 +54,11 @@ public class Image {
         this.cloudinaryPublicId = cloudinaryPublicId;
     }
 
-    public boolean isIsThumbnail() {
+    public boolean isThumbnail() {
         return isThumbnail;
     }
 
-    public void setIsThumbnail(boolean isThumbnail) {
+    public void setThumbnail(boolean isThumbnail) {
         this.isThumbnail = isThumbnail;
     }
 

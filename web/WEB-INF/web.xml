@@ -6,7 +6,7 @@
         <!-- minutes -->
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>WEB-INF/jsp/home.jsp</welcome-file>
         <!-- Các servlet được map bằng @WebServlet nên không cần khai báo ở đây nữa -->
     </welcome-file-list>
 </web-app>

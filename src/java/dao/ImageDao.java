@@ -32,7 +32,7 @@ public class ImageDao {
                 ps.setLong(1, image.getPostId());
                 ps.setString(2, image.getImageUrl());
                 ps.setString(3, image.getCloudinaryPublicId());
-                ps.setBoolean(4, image.isIsThumbnail());
+                ps.setBoolean(4, image.isThumbnail());
                 ps.addBatch();
             }
             
@@ -70,7 +70,7 @@ public class ImageDao {
                     img.setPostId(rs.getLong("post_id"));
                     img.setImageUrl(rs.getString("image_url"));
                     img.setCloudinaryPublicId(rs.getString("cloudinary_public_id"));
-                    img.setIsThumbnail(rs.getBoolean("is_thumbnail"));
+                    img.setThumbnail(rs.getBoolean("is_thumbnail"));
                     images.add(img);
                 }
             }

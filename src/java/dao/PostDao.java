@@ -14,9 +14,9 @@ import util.DBContext;
 public class PostDao {
 
     /**
-     * Tạo một bài đăng mới và trả về ID của nó.
-     * @param post Đối tượng Post chứa tất cả thông tin.
-     * @return ID của bài đăng vừa tạo, hoặc -1 nếu thất bại.
+     * Tạo một bài đăng mới và trả về ID của bài đăng đó.
+     * @param post Đối tượng Post chứa thông tin cần lưu.
+     * @return ID của bài đăng vừa được tạo, hoặc -1 nếu thất bại.
      */
     public long createPost(Post post) {
         String sql = "INSERT INTO posts (title, description, address_province_id, address_district, address_ward, " +
@@ -24,15 +24,15 @@ public class PostDao {
                      "price, area, bedrooms, bathrooms, floors, house_direction, balcony_direction, " +
                      "furniture, amenities, safety, availability_info, electricity_cost, water_cost, " +
                      "internet_cost, legal_status, listing_type_code, display_duration_days, " +
-                     "status, user_id, category_id) " +
-                     "OUTPUT INSERTED.id " + // Lấy ID vừa được insert
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "status, source_type, user_id, category_id) " +
+                     "OUTPUT INSERTED.id " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
-            setPostParameters(ps, post); // Gọi hàm helper để set params
-
+            setPostParameters(ps, post);
+            
             try (ResultSet generatedKeys = ps.executeQuery()) {
                 if (generatedKeys.next()) {
                     return generatedKeys.getLong(1);
@@ -123,11 +123,39 @@ public class PostDao {
 
     // --- Helper Methods ---
 
+    // Phương thức helper để set các tham số cho PreparedStatement
     private void setPostParameters(PreparedStatement ps, Post post) throws SQLException {
-        // ... (code set 30 parameters như trong hàm createPost ở trên) ...
         ps.setString(1, post.getTitle());
-        // ...
-        ps.setInt(30, post.getCategoryId());
+        ps.setString(2, post.getDescription());
+        ps.setInt(3, post.getAddressProvinceId());
+        ps.setString(4, post.getAddressDistrict());
+        ps.setString(5, post.getAddressWard());
+        ps.setString(6, post.getAddressStreet());
+        ps.setString(7, post.getAddressDetail());
+        ps.setString(8, post.getContactName());
+        ps.setString(9, post.getContactPhone());
+        ps.setString(10, post.getContactEmail());
+        ps.setBigDecimal(11, post.getPrice());
+        ps.setFloat(12, post.getArea());
+        ps.setObject(13, post.getBedrooms());
+        ps.setObject(14, post.getBathrooms());
+        ps.setObject(15, post.getFloors());
+        ps.setString(16, post.getHouseDirection());
+        ps.setString(17, post.getBalconyDirection());
+        ps.setString(18, post.getFurniture());
+        ps.setString(19, post.getAmenities());
+        ps.setString(20, post.getSafety());
+        ps.setString(21, post.getAvailabilityInfo());
+        ps.setString(22, post.getElectricityCost());
+        ps.setString(23, post.getWaterCost());
+        ps.setString(24, post.getInternetCost());
+        ps.setString(25, post.getLegalStatus());
+        ps.setString(26, post.getListingTypeCode());
+        ps.setInt(27, post.getDisplayDurationDays());
+        ps.setString(28, post.getStatus());
+        ps.setString(29, post.getSourceType());
+        ps.setLong(30, post.getUserId());
+        ps.setInt(31, post.getCategoryId());
     }
 
     private Post mapRowToPost(ResultSet rs) throws SQLException {
