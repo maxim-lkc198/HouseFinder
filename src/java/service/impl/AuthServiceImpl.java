@@ -65,32 +65,30 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public User loginUser(String usernameOrEmail, String password) {
-        // Có thể login bằng username hoặc email
-        User user = userDao.getUserByUsername(usernameOrEmail);
-        if (user == null) {
-            user = userDao.getUserByEmail(usernameOrEmail);
-        }
-
-        if (user != null && user.isIsActive()) {
-            // Kiểm tra mật khẩu
-            if (PasswordUtil.checkPassword(password, user.getPassword())) {
-                return user;
-            }
-        }
-        return null; // Trả về null nếu không tìm thấy user, user bị ban, hoặc sai mật khẩu
+public User loginUser(String usernameOrEmail, String password) {
+    User user = userDao.getUserByUsername(usernameOrEmail);
+    if (user == null) {
+        user = userDao.getUserByEmail(usernameOrEmail);
     }
+
+    if (user != null && user.isActive()) { // SỬA LẠI: Dùng user.isActive()
+        if (PasswordUtil.checkPassword(password, user.getPassword())) {
+            return user;
+        }
+    }
+    return null;
+}
 
     @Override
     public void generatePasswordResetToken(String email) {
         User user = userDao.getUserByEmail(email);
-        if (user != null && user.isIsActive()) {
+        if (user != null && user.isActive()) {
             String token = UUID.randomUUID().toString();
             LocalDateTime expiryDate = LocalDateTime.now().plusHours(1); // Token hết hạn sau 1 giờ
 
             if (userDao.savePasswordResetToken(user.getId(), token, expiryDate)) {
                 // Gửi email chứa link reset
-                String resetLink = "http://localhost:8080/HouseFinder/reset-password?token=" + token; // Cần cấu hình base URL
+                String resetLink = "http://localhost:9999/HouseFinder/reset-password?token=" + token; // Cần cấu hình base URL
                 String subject = "Password Reset Request for FindHouse";
                 String body = "<h1>Password Reset Request</h1>"
                             + "<p>Hi " + user.getFirstName() + ",</p>"

@@ -11,6 +11,7 @@ import java.util.List;
 import model.Role;
 import model.User;
 import util.DBContext;
+import util.PasswordUtil;
 
 public class UserDao {
 
@@ -105,14 +106,19 @@ public class UserDao {
      * @param user Đối tượng User chứa thông tin. Mật khẩu sẽ được hash trước khi lưu.
      * @return true nếu tạo thành công, false nếu thất bại.
      */
-    public boolean createUser(User user) {
+     public boolean createUser(User user) {
+        // Câu lệnh SQL đúng với 9 tham số
         String sql = "INSERT INTO users (username, email, password, first_name, last_name, phone_number, dob, address, role_id) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            
+
+            // Hash mật khẩu trước khi lưu
+            String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
+
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getEmail());
+            ps.setString(3, hashedPassword); 
             ps.setString(4, user.getFirstName());
             ps.setString(5, user.getLastName());
             ps.setString(6, user.getPhoneNumber());
@@ -122,6 +128,7 @@ public class UserDao {
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
+            System.err.println("UserDao - createUser Error:");
             e.printStackTrace();
             return false;
         }
@@ -241,7 +248,7 @@ public class UserDao {
         user.setIdCardBackUrl(rs.getString("id_card_back_url"));
         user.setVerificationStatus(rs.getString("verification_status"));
         user.setAvatarUrl(rs.getString("avatar_url"));
-        user.setIsActive(rs.getBoolean("is_active"));
+        user.setActive(rs.getBoolean("is_active")); // SỬA LẠI: Dùng đúng tên getter/setter
         user.setPasswordResetToken(rs.getString("password_reset_token"));
         Timestamp expiryTimestamp = rs.getTimestamp("password_reset_token_expiry");
         if (expiryTimestamp != null) {
