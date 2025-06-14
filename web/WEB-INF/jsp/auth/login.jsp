@@ -4,46 +4,36 @@
     Author     : Maxim
 --%>
 
+<%-- login.jsp --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <jsp:include page="/WEB-INF/jsp/common/auth_header.jsp" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
     <title>Đăng Nhập - FindHouse</title>
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-form-wrapper">
-            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/images/login-bg.jpg');">
-                <%-- Bạn có thể tìm một ảnh phù hợp cho trang đăng nhập, ví dụ cảnh một người đang nhận chìa khóa nhà --%>
-            </div>
+            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/images/auth/undraw_secure-login_m11a.svg');"></div>
             <div class="auth-form-panel">
                 <p class="subtitle">Chào mừng trở lại!</p>
                 <h2>Đăng nhập vào tài khoản</h2>
 
-                <%-- Hiển thị thông báo lỗi chung --%>
                 <c:if test="${not empty errorMessage}">
-                    <div class="error-message">
-                        <i class="fa-solid fa-circle-exclamation"></i> ${errorMessage}
-                    </div>
+                    <div class="error-message"><i class="fa-solid fa-circle-exclamation"></i> ${errorMessage}</div>
                 </c:if>
-
-                <%-- Hiển thị thông báo khi đăng ký/reset pass thành công --%>
                 <c:if test="${not empty successMessage}">
-                    <div class="success-message">
-                        <i class="fa-solid fa-circle-check"></i> ${successMessage}
-                    </div>
+                    <div class="success-message"><i class="fa-solid fa-circle-check"></i> ${successMessage}</div>
                 </c:if>
-                
-                <%-- Hiển thị thông báo khi logout --%>
                  <c:if test="${param.logout == 'true'}">
-                    <div class="success-message">
-                        <i class="fa-solid fa-circle-check"></i> Bạn đã đăng xuất thành công.
-                    </div>
+                    <div class="success-message"><i class="fa-solid fa-circle-check"></i> Bạn đã đăng xuất thành công.</div>
                 </c:if>
 
-                <form action="login" method="post">
+                <form action="login" method="post" style="margin-top: 1.5rem;">
                     <div class="form-group">
                         <label for="username">Tên đăng nhập hoặc Email</label>
                         <div class="input-wrapper">
@@ -60,8 +50,7 @@
                         </div>
                     </div>
 
-                    <div class="form-options">
-                        <%-- Thêm checkbox "Remember Me" nếu bạn triển khai trong tương lai --%>
+                    <div class="form-options" style="text-align: right; margin-bottom: 1rem;">
                         <a href="${pageContext.request.contextPath}/forgot-password" class="forgot-password-link">Quên mật khẩu?</a>
                     </div>
 
@@ -74,5 +63,7 @@
             </div>
         </div>
     </div>
+    
+    <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
 </body>
 </html>

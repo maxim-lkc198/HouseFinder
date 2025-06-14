@@ -1,80 +1,26 @@
-<%-- /WEB-INF/jsp/common/header.jsp (PHIÊN BẢN SỬA LỖI DROPDOWN) --%>
+<%-- home.jsp (PHIÊN BẢN LAYOUT TUẦN TỰ) --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<%-- Thêm ?v=6.0 để buộc trình duyệt tải file CSS mới, tránh lỗi cache --%>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css?v=6.0">
-
-<header class="site-header">
-    <div class="header-left-wrapper">
-        <div class="logo">
-            <a href="${pageContext.request.contextPath}/home">
-                <i class="fa-solid fa-house-chimney"></i> FindHouse
-            </a>
-        </div>
-        <nav class="header-nav">
-            <a href="#">Giới thiệu</a>
-            <a href="#">Tin tức</a>
-            <a href="#">Liên hệ</a>
-        </nav>
-    </div>
-
-    <div class="header-right">
-         <div class="header-actions">
-            <a href="#" class="header-icon-link" title="Yêu thích"><i class="fa-regular fa-heart"></i></a>
-            <a href="#" class="header-icon-link" title="Thông báo"><i class="fa-regular fa-bell"></i></a>
-            
-            <c:choose>
-                <c:when test="${not empty sessionScope.loggedInUser}">
-                    <div class="user-menu">
-                        <div class="user-menu-trigger">
-                            <div class="user-avatar">${sessionScope.loggedInUser.firstName.substring(0,1)}</div>
-                            <span>${sessionScope.loggedInUser.firstName} ${sessionScope.loggedInUser.lastName}</span>
-                            <i class="fa-solid fa-chevron-down fa-xs"></i>
-                        </div>
-                        <div class="dropdown-content">
-                             <%-- Phần quảng cáo giống ảnh mẫu --%>
-                             <div class="dropdown-promo">
-                                 <h4>Gói Hội viên</h4>
-                                 <p>Tiết kiệm đến 39% chi phí so với đăng tin/đẩy tin lẻ</p>
-                                 <a href="#" class="btn-promo">Tìm hiểu thêm</a>
-                             </div>
-                             
-                             <%-- Các link chức năng --%>
-                            <a href="#"><i class="fa-solid fa-chart-line"></i> Tổng quan <span class="badge badge-new">Mới</span></a>
-                            <a href="${pageContext.request.contextPath}/my-posts"><i class="fa-solid fa-list-check"></i> Quản lý tin đăng</a>
-                            <a href="#"><i class="fa-solid fa-layer-group"></i> Gói hội viên <span class="badge badge-sale">Tiết kiệm -39%</span></a>
-                            <a href="${pageContext.request.contextPath}/my-profile-settings"><i class="fa-solid fa-user-pen"></i> Thay đổi thông tin cá nhân</a>
-                            <a href="#"><i class="fa-solid fa-key"></i> Thay đổi mật khẩu</a>
-                            <a href="${pageContext.request.contextPath}/recharge"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
-                            <div class="dropdown-divider"></div>
-                            <a href="${pageContext.request.contextPath}/logout" class="logout-link"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
-                        </div>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/login" class="btn btn-link">Đăng nhập</a>
-                    <a href="${pageContext.request.contextPath}/register" class="btn btn-link">Đăng ký</a>
-                </c:otherwise>
-            </c:choose>
-
-            <a href="${pageContext.request.contextPath}/create-post" class="btn btn-accent">Đăng tin</a>
-        </div>
-    </div>
-</header>
-        
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
+    <title>FindHouse - Tìm kiếm nhà đất, phòng trọ, căn hộ</title>
+</head>
 <body>
     <main>
-        <%-- PHẦN HERO VÀ THANH TÌM KIẾM (Giữ nguyên) --%>
+        <%-- PHẦN HERO CHỈ CÒN TIÊU ĐỀ --%>
         <section class="hero-section">
             <div class="hero-content">
                 <h1>Tìm kiếm ngôi nhà mơ ước của bạn</h1>
                 <p>Nền tảng tìm kiếm và cho thuê bất động sản hàng đầu Việt Nam</p>
             </div>
+        </section>
+
+        <%-- THANH TÌM KIẾM GIỜ LÀ MỘT SECTION RIÊNG BIỆT --%>
+        <section class="search-section">
             <div class="search-container">
                 <h4 class="search-title">Tìm kiếm nhà cho thuê</h4>
                 <div class="search-bar">
@@ -96,12 +42,8 @@
             </div>
         </section>
 
-        <%-- ========================================================= --%>
-        <%-- PHẦN NỘI DUNG CHÍNH BÊN DƯỚI (PHẦN BỔ SUNG) --%>
-        <%-- ========================================================= --%>
+        <%-- PHẦN NỘI DUNG CHÍNH (Tin nổi bật, Khám phá...) --%>
         <div class="main-content">
-            
-            <%-- Section: Tin nổi bật --%>
             <section class="featured-listings">
                 <div class="container">
                     <div class="section-header">
@@ -109,7 +51,6 @@
                         <a href="#" class="view-more-link">Xem thêm <i class="fa-solid fa-arrow-right"></i></a>
                     </div>
                     <div class="listing-grid">
-                        <%-- Giả lập vòng lặp qua các bài đăng, bạn sẽ thay thế bằng <c:forEach> --%>
                         <% for(int i = 0; i < 8; i++) { %>
                         <div class="listing-card">
                             <div class="card-image">
@@ -134,7 +75,6 @@
                 </div>
             </section>
             
-            <%-- Section: Khám phá theo khu vực --%>
             <section class="location-showcase">
                 <div class="container">
                      <div class="section-header">
@@ -157,7 +97,6 @@
                 </div>
             </section>
 
-             <%-- Section: Call-to-action (Đăng tin) --%>
             <section class="cta-section">
                 <div class="container cta-container">
                     <div class="cta-text">
@@ -172,6 +111,7 @@
             </section>
         </div>
     </main>
+    
     <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
 </body>
 </html>

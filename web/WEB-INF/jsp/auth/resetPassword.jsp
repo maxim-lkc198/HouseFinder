@@ -1,34 +1,28 @@
-<%-- 
-    Document   : resetPassword
-    Created on : Jun 13, 2025, 2:25:34 PM
-    Author     : Maxim
---%>
-
+<%-- resetPassword.jsp --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <jsp:include page="/WEB-INF/jsp/common/auth_header.jsp" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
     <title>Đặt Lại Mật Khẩu - FindHouse</title>
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-form-wrapper">
-            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/images/reset-password-bg.jpg');"></div>
+            <div class="auth-image-panel" style="background-image: url('https://images.undraw.co/drawio/undraw_forgot_password_re_hxwm.svg');"></div>
             <div class="auth-form-panel">
                 <p class="subtitle">An toàn là trên hết</p>
                 <h2>Tạo mật khẩu mới</h2>
                 <p class="input-hint" style="margin-bottom: 2rem;">Mật khẩu mới của bạn phải khác với các mật khẩu đã sử dụng trước đây.</p>
                 
                 <c:if test="${not empty errorMessage}">
-                    <div class="error-message">
-                        <i class="fa-solid fa-circle-exclamation"></i> ${errorMessage}
-                    </div>
+                    <div class="error-message"><i class="fa-solid fa-circle-exclamation"></i> ${errorMessage}</div>
                 </c:if>
 
                 <form action="reset-password" method="post">
-                    <%-- Truyền token một cách ẩn đi để server có thể nhận lại --%>
                     <input type="hidden" name="token" value="${requestScope.token}">
                     
                     <div class="form-group">
@@ -53,5 +47,7 @@
             </div>
         </div>
     </div>
+    
+    <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
 </body>
 </html>

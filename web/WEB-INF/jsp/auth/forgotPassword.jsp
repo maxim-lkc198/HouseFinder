@@ -4,39 +4,38 @@
     Author     : Maxim
 --%>
 
+<%-- forgotPassword.jsp --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <jsp:include page="/WEB-INF/jsp/common/auth_header.jsp" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
     <title>Quên Mật Khẩu - FindHouse</title>
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-form-wrapper">
-            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/images/forgot-password-bg.jpg');"></div>
+            <div class="auth-image-panel" style="background-image: url('https://images.undraw.co/drawio/undraw_forgot_password_re_hxwm.svg');"></div>
             <div class="auth-form-panel">
-                <p class="subtitle">Đặt lại mật khẩu của bạn</p>
+                <p class="subtitle">Đặt lại mật khẩu</p>
                 <h2>Quên mật khẩu?</h2>
                 
                 <c:if test="${not empty message}">
-                    <%-- Đây là thông báo sau khi gửi email thành công --%>
                     <div class="success-message">
                         <i class="fa-solid fa-paper-plane"></i> ${message}
                     </div>
-                    <p class="input-hint" style="margin-top: 1rem;">Nếu bạn không nhận được email, vui lòng kiểm tra hộp thư Spam hoặc thử gửi lại sau 1 phút.</p>
-                    
-                    <%-- Nút Resend (có thể dùng JavaScript để disable trong 60s) --%>
+                    <p class="input-hint" style="margin-top: 1rem;">Nếu không nhận được email, vui lòng kiểm tra thư mục Spam hoặc thử lại sau 1 phút.</p>
                     <form action="forgot-password" method="post" style="margin-top: 1rem;">
-                        <input type="hidden" name="email" value="${param.email}"> <%-- Giữ lại email đã nhập --%>
-                        <button type="submit" class="btn btn-secondary" id="resendBtn">Gửi lại Email</button>
+                        <input type="hidden" name="email" value="${param.email}">
+                        <button type="submit" class="btn btn-secondary" id="resendBtn" style="width: 100%; padding: 14px;">Gửi lại Email</button>
                     </form>
                 </c:if>
 
                 <c:if test="${empty message}">
-                    <%-- Hiển thị form ban đầu --%>
-                    <p class="input-hint" style="margin-bottom: 2rem;">Nhập email của bạn dưới đây và chúng tôi sẽ gửi cho bạn một đường link để đặt lại mật khẩu.</p>
+                    <p class="input-hint" style="margin-bottom: 2rem;">Đừng lo lắng! Nhập email của bạn dưới đây, chúng tôi sẽ gửi một liên kết để bạn đặt lại mật khẩu.</p>
                     <form action="forgot-password" method="post">
                         <div class="form-group">
                             <label for="email">Địa chỉ email đã đăng ký</label>
@@ -50,29 +49,36 @@
                 </c:if>
                 
                 <div class="auth-switch">
-                    <p>Đã nhớ ra mật khẩu? <a href="${pageContext.request.contextPath}/login">Quay lại Đăng nhập</a></p>
+                    <p>Đã nhớ ra? <a href="${pageContext.request.contextPath}/login">Quay lại Đăng nhập</a></p>
                 </div>
             </div>
         </div>
     </div>
     
+    <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
     <script>
-        // JS để disable nút resend trong 60 giây
         const resendBtn = document.getElementById('resendBtn');
         if (resendBtn) {
             let countdown = 60;
-            resendBtn.disabled = true;
-            resendBtn.textContent = 'Gửi lại sau (' + countdown + 's)';
+            const originalText = resendBtn.textContent;
             
+            const disableButton = () => {
+                resendBtn.disabled = true;
+                resendBtn.textContent = 'Gửi lại sau (' + countdown + 's)';
+            };
+
             const interval = setInterval(() => {
                 countdown--;
-                resendBtn.textContent = 'Gửi lại sau (' + countdown + 's)';
                 if (countdown <= 0) {
                     clearInterval(interval);
                     resendBtn.disabled = false;
-                    resendBtn.textContent = 'Gửi lại Email';
+                    resendBtn.textContent = originalText;
+                } else {
+                    resendBtn.textContent = 'Gửi lại sau (' + countdown + 's)';
                 }
             }, 1000);
+
+            disableButton(); // Call it once immediately
         }
     </script>
 </body>
