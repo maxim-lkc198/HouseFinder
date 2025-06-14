@@ -1,4 +1,3 @@
-<%-- login.jsp --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -11,10 +10,10 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/auth.css?v=8.0">
     <title>Đăng Ký - Bước 1 - FindHouse</title>
 </head>
-<body>
+<body class="page-auth">
     <div class="auth-container">
         <div class="auth-form-wrapper">
-            <div class="auth-image-panel" style="background-image: url('https://images.undraw.co/drawio/undraw_sign_up_n6im.svg');"></div>
+            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/image/auth/undraw_enter_nwx3.svg');"></div>
             <div class="auth-form-panel">
                 <p class="subtitle">Bắt đầu hành trình của bạn</p>
                 <h2>Tạo tài khoản FindHouse</h2>

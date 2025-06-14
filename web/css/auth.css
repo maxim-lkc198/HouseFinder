@@ -1,8 +1,8 @@
 /* ---- FILE: auth.css ---- */
-.page-auth { background-color: #f4f7f9; } /* Màu nền riêng cho trang auth */
+.page-auth { background-color: #d1e7dd; } /* Màu nền riêng cho trang auth */
 .auth-container { display: flex; justify-content: center; align-items: center; padding: 3rem 1rem; }
 .auth-form-wrapper { width: 100%; max-width: 900px; min-height: 600px; display: flex; background-color: var(--surface-color); border-radius: var(--border-radius); box-shadow: var(--box-shadow); overflow: hidden; }
-.auth-image-panel { flex: 1; background-size: cover; background-position: center; }
+.auth-image-panel { flex: 1; background-size: contain; background-position: center; background-repeat: no-repeat; padding: 2rem; background-origin: content-box; }
 .auth-form-panel { flex: 1; padding: 2.5rem 3rem; display: flex; flex-direction: column; justify-content: center; }
 .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 1.5rem; }
 .form-group { margin-bottom: 1.25rem; }

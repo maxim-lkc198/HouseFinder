@@ -1,4 +1,3 @@
-<%-- login.jsp --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -11,10 +10,10 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/auth.css?v=8.0">
     <title>Đăng Nhập - FindHouse</title>
 </head>
-<body>
+<body class="page-auth">
     <div class="auth-container">
         <div class="auth-form-wrapper">
-            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/image/auth/undraw_secure-login_m11a.png');"></div>
+            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/image/auth/undraw_unlock_q1e5.svg');"></div>
             <div class="auth-form-panel">
                 <p class="subtitle">Chào mừng trở lại!</p>
                 <h2>Đăng nhập vào tài khoản</h2>

@@ -18,36 +18,47 @@
             </a>
         </div>
         <nav class="header-nav">
-            <a href="#">Giới thiệu</a>
-            <a href="#">Tin tức</a>
-            <a href="#">Liên hệ</a>
+            <%-- Các link này hiện tại có thể chưa có servlet xử lý, để # hoặc trỏ đến /posts với param --%>
+            <a href="${pageContext.request.contextPath}/posts?category=can-ho">Căn Hộ</a>
+            <a href="${pageContext.request.contextPath}/posts?category=nha-rieng">Nhà Riêng</a>
+            <a href="${pageContext.request.contextPath}/posts?category=phong-tro">Phòng Trọ</a>
         </nav>
     </div>
 
     <div class="header-right">
          <div class="header-actions">
-            <a href="#" class="header-icon-link" title="Yêu thích"><i class="fa-regular fa-heart"></i></a>
-            <a href="#" class="header-icon-link" title="Thông báo"><i class="fa-regular fa-bell"></i></a>
+            <%-- Wishlist và Notifications sẽ được làm ở Iteration 2/3 --%>
+            <%-- Luôn yêu cầu đăng nhập để xem các mục này --%>
+            <a href="${pageContext.request.contextPath}/wishlist" class="header-icon-link" title="Yêu thích"><i class="fa-regular fa-heart"></i></a>
+            <a href="${pageContext.request.contextPath}/notifications" class="header-icon-link" title="Thông báo"><i class="fa-regular fa-bell"></i></a>
             
             <c:choose>
                 <c:when test="${not empty sessionScope.loggedInUser}">
                     <div class="user-menu">
                         <div class="user-menu-trigger">
-                            <div class="user-avatar">${sessionScope.loggedInUser.firstName.substring(0,1)}</div>
+                            <%-- Hiển thị avatar nếu có, nếu không thì hiển thị chữ cái đầu --%>
+                            <c:choose>
+                                <c:when test="${not empty sessionScope.loggedInUser.avatarUrl}">
+                                    <img src="${sessionScope.loggedInUser.avatarUrl}" class="user-avatar-img" alt="Avatar">
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="user-avatar-char">${sessionScope.loggedInUser.firstName.substring(0,1)}</div>
+                                </c:otherwise>
+                            </c:choose>
                             <span>${sessionScope.loggedInUser.firstName} ${sessionScope.loggedInUser.lastName}</span>
                             <i class="fa-solid fa-chevron-down fa-xs"></i>
                         </div>
                         <div class="dropdown-content">
                              <div class="dropdown-promo">
-                                 <h4>Gói Hội viên</h4>
-                                 <p>Tiết kiệm đến 39% chi phí so với đăng tin/đẩy tin lẻ</p>
-                                 <a href="#" class="btn-promo">Tìm hiểu thêm</a>
+                                 <h4>Nâng cấp tài khoản</h4>
+                                 <p>Tiết kiệm đến 39% chi phí với Gói Hội Viên của chúng tôi!</p>
+                                 <a href="${pageContext.request.contextPath}/membership" class="btn-promo">Khám phá ngay</a>
                              </div>
-                            <a href="#"><i class="fa-solid fa-chart-line"></i> Tổng quan <span class="badge badge-new">Mới</span></a>
+                            <a href="${pageContext.request.contextPath}/my-account"><i class="fa-solid fa-chart-line"></i> Tổng quan tài khoản</a>
                             <a href="${pageContext.request.contextPath}/my-posts"><i class="fa-solid fa-list-check"></i> Quản lý tin đăng</a>
-                            <a href="#"><i class="fa-solid fa-layer-group"></i> Gói hội viên <span class="badge badge-sale">Tiết kiệm -39%</span></a>
-                            <a href="${pageContext.request.contextPath}/my-profile-settings"><i class="fa-solid fa-user-pen"></i> Thay đổi thông tin cá nhân</a>
-                            <a href="#"><i class="fa-solid fa-key"></i> Thay đổi mật khẩu</a>
+                            <a href="${pageContext.request.contextPath}/my-membership"><i class="fa-solid fa-layer-group"></i> Gói hội viên</a>
+                            <a href="${pageContext.request.contextPath}/my-profile-settings"><i class="fa-solid fa-user-pen"></i> Thông tin cá nhân</a>
+                            <a href="${pageContext.request.contextPath}/change-password"><i class="fa-solid fa-key"></i> Đổi mật khẩu</a>
                             <a href="${pageContext.request.contextPath}/recharge"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
                             <div class="dropdown-divider"></div>
                             <a href="${pageContext.request.contextPath}/logout" class="logout-link"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
@@ -60,7 +71,8 @@
                 </c:otherwise>
             </c:choose>
 
-            <a href="${pageContext.request.contextPath}/create-post" class="btn btn-accent">Đăng tin</a>
+                        <a href="${pageContext.request.contextPath}/create-post" class="btn btn-accent">Đăng tin</a>
+
         </div>
     </div>
 </header>

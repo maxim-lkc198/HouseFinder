@@ -1,4 +1,3 @@
-<%-- login.jsp --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -11,10 +10,10 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/auth.css?v=8.0">
     <title>Đăng Ký - Bước 2 - FindHouse</title>
 </head>
-<body>
+<body class="page-auth">
     <main class="auth-container">
         <div class="auth-form-wrapper">
-            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/images/auth/register.svg');"></div>
+            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/image/auth/undraw_enter_nwx3.svg');"></div>
             <div class="auth-form-panel">
                 <p class="subtitle">Sắp xong rồi!</p>
                 <h2>Hoàn tất thông tin</h2>
