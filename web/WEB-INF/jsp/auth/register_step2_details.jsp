@@ -1,4 +1,4 @@
-<%-- register_step2_detail.jsp (ĐÃ SỬA) --%>
+<%-- login.jsp --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
@@ -7,6 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
+    <%-- Load file CSS riêng của trang auth --%>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/auth.css?v=8.0">
     <title>Đăng Ký - Bước 2 - FindHouse</title>
 </head>
 <body>

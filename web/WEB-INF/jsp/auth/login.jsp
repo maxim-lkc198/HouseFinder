@@ -1,9 +1,3 @@
-<%-- 
-    Document   : login
-    Created on : Jun 13, 2025, 2:24:24 PM
-    Author     : Maxim
---%>
-
 <%-- login.jsp --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -13,12 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
+    <%-- Load file CSS riêng của trang auth --%>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/auth.css?v=8.0">
     <title>Đăng Nhập - FindHouse</title>
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-form-wrapper">
-            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/images/auth/undraw_secure-login_m11a.svg');"></div>
+            <div class="auth-image-panel" style="background-image: url('${pageContext.request.contextPath}/image/auth/undraw_secure-login_m11a.png');"></div>
             <div class="auth-form-panel">
                 <p class="subtitle">Chào mừng trở lại!</p>
                 <h2>Đăng nhập vào tài khoản</h2>

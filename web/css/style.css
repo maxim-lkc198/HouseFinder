@@ -5,7 +5,7 @@
    =================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 :root {
-    --primary-color: #07BEB8; --primary-hover: #3DCCC7; --accent-color: #E29578; --accent-hover: #d37a59; --background-color: #F0FEFC; --surface-color: #FFFFFF; --text-color: #0d1b2a; --text-light: #5f6c7b; --border-color: #e5e9f2; --promo-bg: #E44D2E; --font-family: 'Be Vietnam Pro', sans-serif; --border-radius: 8px; --box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); --container-width: 1200px;
+    --primary-color: #07BEB8; --primary-hover: #3DCCC7; --accent-color: var(--promo-bg); --accent-hover: #f2542d; --background-color: #64b6ac; --surface-color: #FFFFFF; --text-color: #0d1b2a; --text-light: #5f6c7b; --border-color: #e5e9f2; --promo-bg: #E44D2E; --font-family: 'Be Vietnam Pro', sans-serif; --border-radius: 8px; --box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); --container-width: 1200px;
 }
 
 /* ===================================================================
@@ -34,9 +34,9 @@ a:hover { color: var(--primary-hover); }
 .header-icon-link:hover { color: var(--primary-color); }
 .header-actions .btn { padding: 10px 20px; border-radius: var(--border-radius); font-weight: 600; border: none; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
 .btn-accent { background-color: var(--accent-color); color: white; border: 1px solid var(--accent-color); }
-.btn-accent:hover { background-color: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-accent:hover { background-color: var(--accent-hover); border-color: var(--accent-hover); color: white}
 .btn-link { background: none; border: 1px solid var(--border-color); color: var(--text-color); }
-.btn-link:hover { background-color: var(--background-color); }
+.btn-link:hover { background-color: white; }
 .user-menu { position: relative; }
 .user-menu-trigger { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; }
 .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: var(--primary-color); color: white; display: grid; place-items: center; font-weight: 700; }

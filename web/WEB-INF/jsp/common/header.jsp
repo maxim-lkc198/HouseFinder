@@ -1,117 +1,66 @@
-<%-- home.jsp (PHIÊN BẢN LAYOUT TUẦN TỰ) --%>
+<%-- /WEB-INF/jsp/common/header.jsp (CHUẨN HÓA) --%>
 <%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
-    <title>FindHouse - Tìm kiếm nhà đất, phòng trọ, căn hộ</title>
-</head>
-<body>
-    <main>
-        <%-- PHẦN HERO CHỈ CÒN TIÊU ĐỀ --%>
-        <section class="hero-section">
-            <div class="hero-content">
-                <h1>Tìm kiếm ngôi nhà mơ ước của bạn</h1>
-                <p>Nền tảng tìm kiếm và cho thuê bất động sản hàng đầu Việt Nam</p>
-            </div>
-        </section>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<%-- Load các file CSS chung --%>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/base.css?v=8.0">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/header.css?v=8.0">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/footer.css?v=8.0">
 
-        <%-- THANH TÌM KIẾM GIỜ LÀ MỘT SECTION RIÊNG BIỆT --%>
-        <section class="search-section">
-            <div class="search-container">
-                <h4 class="search-title">Tìm kiếm nhà cho thuê</h4>
-                <div class="search-bar">
-                    <div class="input-group">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <input type="text" placeholder="Hà Nội">
-                    </div>
-                     <div class="input-group" style="flex-grow: 2;">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" placeholder="Nhập địa điểm, dự án. Ví dụ: Quận Hoàn Kiếm">
-                    </div>
-                    <button class="btn btn-search">Tìm kiếm</button>
-                </div>
-                <div class="search-filters">
-                    <select> <option>Loại nhà đất</option> </select>
-                    <select> <option>Mức giá</option> </select>
-                    <select> <option>Diện tích</option> </select>
-                </div>
-            </div>
-        </section>
-
-        <%-- PHẦN NỘI DUNG CHÍNH (Tin nổi bật, Khám phá...) --%>
-        <div class="main-content">
-            <section class="featured-listings">
-                <div class="container">
-                    <div class="section-header">
-                        <h2>Nhà cho thuê nổi bật</h2>
-                        <a href="#" class="view-more-link">Xem thêm <i class="fa-solid fa-arrow-right"></i></a>
-                    </div>
-                    <div class="listing-grid">
-                        <% for(int i = 0; i < 8; i++) { %>
-                        <div class="listing-card">
-                            <div class="card-image">
-                                <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2070&auto=format&fit=crop" alt="House Image">
-                                <button class="favorite-btn"><i class="fa-regular fa-heart"></i></button>
-                            </div>
-                            <div class="card-body">
-                                <h3 class="card-title"><a href="#">Cho thuê căn hộ mini full nội thất Quận 1</a></h3>
-                                <div class="card-price">5 triệu/tháng</div>
-                                <div class="card-details">
-                                    <span><i class="fa-solid fa-ruler-combined"></i> 35 m²</span>
-                                    <span><i class="fa-solid fa-bed"></i> 1 PN</span>
-                                    <span><i class="fa-solid fa-bath"></i> 1 WC</span>
-                                </div>
-                                <div class="card-location">
-                                    <i class="fa-solid fa-map-marker-alt"></i> Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh
-                                </div>
-                            </div>
-                        </div>
-                        <% } %>
-                    </div>
-                </div>
-            </section>
-            
-            <section class="location-showcase">
-                <div class="container">
-                     <div class="section-header">
-                        <h2>Khám phá theo khu vực</h2>
-                    </div>
-                    <div class="location-grid">
-                        <a href="#" class="location-card">
-                            <img src="https://images.unsplash.com/photo-1596436826649-5a82a46a234a?q=80&w=1974&auto=format&fit=crop" alt="Hà Nội">
-                            <div class="location-name">Hà Nội</div>
-                        </a>
-                        <a href="#" class="location-card">
-                            <img src="https://images.unsplash.com/photo-1583417319070-4a69db38a432?q=80&w=2070&auto=format&fit=crop" alt="TP. Hồ Chí Minh">
-                             <div class="location-name">TP. Hồ Chí Minh</div>
-                        </a>
-                        <a href="#" class="location-card">
-                            <img src="https://images.unsplash.com/photo-1563492065599-3520f775ee05?q=80&w=1974&auto=format&fit=crop" alt="Đà Nẵng">
-                             <div class="location-name">Đà Nẵng</div>
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <section class="cta-section">
-                <div class="container cta-container">
-                    <div class="cta-text">
-                        <h2>Bạn có bất động sản cho thuê?</h2>
-                        <p>Tiếp cận hàng triệu khách hàng tiềm năng mỗi tháng một cách dễ dàng và hiệu quả cùng FindHouse.</p>
-                        <a href="${pageContext.request.contextPath}/create-post" class="btn btn-cta">Đăng tin ngay</a>
-                    </div>
-                    <div class="cta-image">
-                        <img src="${pageContext.request.contextPath}/images/auth/register.svg" alt="Đăng tin ngay">
-                    </div>
-                </div>
-            </section>
+<header class="site-header">
+    <div class="header-left-wrapper">
+        <div class="logo">
+            <a href="${pageContext.request.contextPath}/home">
+                <i class="fa-solid fa-house-chimney"></i> FindHouse
+            </a>
         </div>
-    </main>
-    
-    <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
-</body>
-</html>
+        <nav class="header-nav">
+            <a href="#">Giới thiệu</a>
+            <a href="#">Tin tức</a>
+            <a href="#">Liên hệ</a>
+        </nav>
+    </div>
+
+    <div class="header-right">
+         <div class="header-actions">
+            <a href="#" class="header-icon-link" title="Yêu thích"><i class="fa-regular fa-heart"></i></a>
+            <a href="#" class="header-icon-link" title="Thông báo"><i class="fa-regular fa-bell"></i></a>
+            
+            <c:choose>
+                <c:when test="${not empty sessionScope.loggedInUser}">
+                    <div class="user-menu">
+                        <div class="user-menu-trigger">
+                            <div class="user-avatar">${sessionScope.loggedInUser.firstName.substring(0,1)}</div>
+                            <span>${sessionScope.loggedInUser.firstName} ${sessionScope.loggedInUser.lastName}</span>
+                            <i class="fa-solid fa-chevron-down fa-xs"></i>
+                        </div>
+                        <div class="dropdown-content">
+                             <div class="dropdown-promo">
+                                 <h4>Gói Hội viên</h4>
+                                 <p>Tiết kiệm đến 39% chi phí so với đăng tin/đẩy tin lẻ</p>
+                                 <a href="#" class="btn-promo">Tìm hiểu thêm</a>
+                             </div>
+                            <a href="#"><i class="fa-solid fa-chart-line"></i> Tổng quan <span class="badge badge-new">Mới</span></a>
+                            <a href="${pageContext.request.contextPath}/my-posts"><i class="fa-solid fa-list-check"></i> Quản lý tin đăng</a>
+                            <a href="#"><i class="fa-solid fa-layer-group"></i> Gói hội viên <span class="badge badge-sale">Tiết kiệm -39%</span></a>
+                            <a href="${pageContext.request.contextPath}/my-profile-settings"><i class="fa-solid fa-user-pen"></i> Thay đổi thông tin cá nhân</a>
+                            <a href="#"><i class="fa-solid fa-key"></i> Thay đổi mật khẩu</a>
+                            <a href="${pageContext.request.contextPath}/recharge"><i class="fa-solid fa-wallet"></i> Nạp tiền</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="${pageContext.request.contextPath}/logout" class="logout-link"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+                        </div>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <a href="${pageContext.request.contextPath}/login" class="btn btn-link">Đăng nhập</a>
+                    <a href="${pageContext.request.contextPath}/register" class="btn btn-link">Đăng ký</a>
+                </c:otherwise>
+            </c:choose>
+
+            <a href="${pageContext.request.contextPath}/create-post" class="btn btn-accent">Đăng tin</a>
+        </div>
+    </div>
+</header>
