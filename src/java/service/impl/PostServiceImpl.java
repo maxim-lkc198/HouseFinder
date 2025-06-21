@@ -4,11 +4,10 @@
  */
 package service.impl;
 
-import constant.PostStatus;
 import dao.ImageDao;
 import dao.PostDao;
-import dao.UserDao; // Cần để lấy thông tin user nếu cần
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import jakarta.servlet.http.Part;
 import model.Image;
@@ -16,49 +15,73 @@ import model.Post;
 import model.User;
 import service.ImageUploadService;
 import service.PostService;
+import constant.PostStatus;
+import service.PaymentService; // Thêm service thanh toán
 
 public class PostServiceImpl implements PostService {
 
     private final PostDao postDao = new PostDao();
     private final ImageDao imageDao = new ImageDao();
     private final ImageUploadService imageUploadService = new ImageUploadServiceImpl();
-    // private final UserDao userDao = new UserDao(); // Nếu cần lấy user
-    // private final MembershipService membershipService = new MembershipServiceImpl(); // Sẽ dùng ở I2
-
-    private static final int MAX_ACTIVE_POSTS_ITERATION_1 = 2; 
+    private final PaymentService paymentService = new PaymentServiceImpl(); // Khởi tạo PaymentService
 
     @Override
-    public long submitNewPost(Post post, List<Part> imageParts, String thumbnailInputName, User currentUser) 
+    public long submitNewPost(Post post, List<Part> imageParts, String thumbnailIdentifier, User currentUser)
             throws IOException, IllegalStateException {
         
-        // Bước 1: Kiểm tra nghiệp vụ (VD: giới hạn bài đăng)
-        // int activePosts = postDao.countActivePostsForUser(currentUser.getId()); // Cần thêm hàm này vào DAO
-        // if (activePosts >= MAX_ACTIVE_POSTS_ITERATION_1) {
-        //     throw new IllegalStateException("Bạn đã đạt đến giới hạn số bài đăng active.");
-        // }
-        // Tạm thời bỏ qua check này trong I1 để tập trung vào luồng chính
-        
-        // Bước 2: Tạo bài đăng trước để lấy Post ID
-        // Logic cho Iteration 1: Luôn là PAID_LISTING và PENDING_APPROVAL
-        post.setUserId(currentUser.getId());
-        post.setStatus(PostStatus.PENDING_APPROVAL); 
-        // Trong I1, giả sử mọi tin đăng đều là mua lẻ để test luồng.
-        // Logic chọn benefit/trả phí sẽ được thêm ở I2/I3.
-        post.setSourceType("PAID_LISTING"); // Giả định cho I1
-        
+        // Luôn coi là PAID_LISTING trong Iteration 1
+        post.setSourceType("PAID_LISTING");
+        post.setStatus(PostStatus.DRAFT_AWAITING_PAYMENT); // Tạo bài đăng với trạng thái nháp
+
+        // Tạo bài đăng và lấy postId
         long newPostId = postDao.createPost(post);
         if (newPostId == -1) {
-            throw new IOException("Failed to create post record in database.");
+            throw new IOException("Không thể tạo bản ghi bài đăng.");
         }
 
-        // Bước 3: Upload ảnh và lấy URL
-        List<Image> uploadedImages = imageUploadService.uploadPostImages(imageParts, newPostId, thumbnailInputName);
+        // Tính toán chi phí
+        BigDecimal calculatedFee = calculateFee(post);
 
-        // Bước 4: Lưu thông tin ảnh vào CSDL
-        if (!uploadedImages.isEmpty()) {
-            imageDao.createImages(uploadedImages);
+        // Gọi PaymentService để xử lý thanh toán
+        boolean paymentSuccess = paymentService.chargeForListing(currentUser, calculatedFee, newPostId);
+
+        if (paymentSuccess) {
+            // Thanh toán thành công, cập nhật trạng thái bài đăng
+            post.setStatus(PostStatus.PENDING_APPROVAL);
+            postDao.updatePostStatus(newPostId, PostStatus.PENDING_APPROVAL);
+
+            // Upload và lưu ảnh
+            List<Image> uploadedImages = imageUploadService.uploadPostImages(imageParts, newPostId, thumbnailIdentifier);
+            if (!uploadedImages.isEmpty()) {
+                imageDao.createImages(uploadedImages);
+            }
+
+            return newPostId;
+        } else {
+            // Thanh toán thất bại, hoàn tiền nếu cần
+            paymentService.refundListingFee(currentUser, calculatedFee, newPostId, "Hoàn tiền do lỗi hệ thống");
+            return -2; // Trả về mã đặc biệt cho biết đã lưu nháp
         }
-
-        return newPostId;
     }
+
+    
+    @Override
+    public void payForDraftPost(long postId, User user) {
+    Post post = postDao.getPostById(postId);
+    if (post.getStatus().equals(PostStatus.DRAFT_AWAITING_PAYMENT)) {
+        BigDecimal fee = calculateFee(post);
+    boolean paymentSuccess = paymentService.chargeForListing(user, fee, postId);
+    if (paymentSuccess) {
+            post.setStatus(PostStatus.PENDING_APPROVAL);
+            postDao.updatePostStatus(postId, PostStatus.PENDING_APPROVAL);
+        }
+    }
+}
+    
+    private BigDecimal calculateFee(Post post) {
+        BigDecimal dailyRate = "VIP".equals(post.getListingTypeCode()) ? new BigDecimal("20000") : new BigDecimal("10000");
+        return dailyRate.multiply(new BigDecimal(post.getDisplayDurationDays()));
+    }
+    
+    // ... các phương thức khác ...
 }

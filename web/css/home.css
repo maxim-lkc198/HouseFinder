@@ -50,3 +50,30 @@
 .btn-cta:hover { background-color: var(--accent-hover); }
 .cta-image { flex: 1; text-align: center; }
 .cta-image img { max-width: 100%; height: auto; }
+/* Cập nhật search-container */
+.search-form { display: flex; flex-direction: column; gap: 1rem; }
+.main-search-row { display: flex; gap: 1rem; }
+.search-input-group { position: relative; display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: var(--border-radius); background-color: white; }
+.location-group { flex: 1; }
+.keyword-group { flex: 2; }
+.search-input-group i { position: absolute; left: 15px; z-index: 1; color: var(--text-light); }
+.search-input-group input, .search-input-group select { width: 100%; border: none; outline: none; padding: 12px 15px 12px 40px; font-size: 1rem; background: transparent; -webkit-appearance: none; appearance: none; }
+.search-input-group select { cursor: pointer; }
+.filter-row { display: flex; gap: 1rem; }
+/* Dropdown Checkbox/Slider */
+.filter-dropdown { position: relative; flex: 1; }
+.filter-dropdown-toggle { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius); background-color: white; text-align: left; font-size: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.filter-dropdown-toggle::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+.filter-dropdown-menu { display: none; position: absolute; top: 110%; left: 0; width: 300px; background: white; border-radius: var(--border-radius); box-shadow: var(--box-shadow); z-index: 100; border: 1px solid var(--border-color); padding: 1rem; }
+.filter-dropdown.active .filter-dropdown-menu { display: block; }
+.dropdown-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+.btn-link-small { background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600; }
+.dropdown-options { max-height: 200px; overflow-y: auto; }
+.dropdown-option-item { display: block; margin-bottom: 0.5rem; }
+/* Slider */
+.slider-menu { width: 250px; }
+.slider-values { text-align: center; font-weight: 600; margin-bottom: 1.5rem; }
+.slider-container { position: relative; height: 5px; }
+.slider-container .slider-track { position: absolute; height: 100%; width: 100%; background: #ddd; border-radius: 5px; }
+.slider-container input[type=range] { position: absolute; width: 100%; height: 5px; pointer-events: none; -webkit-appearance: none; appearance: none; background: transparent; }
+.slider-container input[type=range]::-webkit-slider-thumb { pointer-events: auto; width: 20px; height: 20px; border-radius: 50%; background: var(--primary-color); cursor: pointer; }

@@ -4,7 +4,7 @@
  */
 package service.impl;
 
-import constant.TransactionType; // Cần tạo file constant này
+import constant.TransactionType; 
 import dao.TransactionDao;
 import dao.UserDao;
 import java.math.BigDecimal;
@@ -104,4 +104,6 @@ public class PaymentServiceImpl implements PaymentService {
         }
         return false;
     }
+    
+        
 }

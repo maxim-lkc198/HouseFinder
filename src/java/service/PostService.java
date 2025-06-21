@@ -22,4 +22,6 @@ public interface PostService {
      * @throws IllegalStateException If user exceeds post limit.
      */
     long submitNewPost(Post post, List<Part> imageParts, String thumbnailInputName, User currentUser) throws IOException, IllegalStateException;
+
+    void payForDraftPost(long postId, User user);
 }

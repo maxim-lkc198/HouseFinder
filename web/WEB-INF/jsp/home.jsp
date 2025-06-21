@@ -17,50 +17,73 @@
                 <h1>Tìm Kiếm Ngôi Nhà Mơ Ước Của Bạn</h1>
                 <p>Nền tảng tìm kiếm và cho thuê bất động sản minh bạch, hiệu quả hàng đầu Việt Nam</p>
             </div>
-            <div class="search-container">
-                <h4 class="search-title">Tìm kiếm nhà cho thuê</h4>
-                <%-- Form tìm kiếm sẽ trỏ đến servlet xử lý danh sách bài đăng --%>
-                <form action="${pageContext.request.contextPath}/posts" method="get" class="search-form">
-                    <div class="search-main-inputs">
-                        <div class="input-group location-group">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <select name="provinceId">
-                                <option value="">Toàn quốc</option>
-                                <c:if test="${not empty provinces}">
-                                    <c:forEach items="${provinces}" var="p">
-                                        <option value="${p.id}">${p.name}</option>
-                                    </c:forEach>
-                                </c:if>
-                            </select>
-                        </div>
-                        <div class="input-group keyword-group">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" name="keyword" placeholder="Chức năng đang phát triển" disabled>
-                        </div>
-                         <button type="submit" class="btn btn-search">Tìm kiếm</button>
-                    </div>
-                    <div class="search-filters">
-                        <select name="categoryId">
-                            <option value="">Loại nhà đất</option>
-                             <c:if test="${not empty categories}">
-                                <c:forEach items="${categories}" var="cat">
-                                    <option value="${cat.id}">${cat.name}</option>
-                                </c:forEach>
-                            </c:if>
-                        </select>
-                        <select name="priceRange">
-                            <option value="">Mức giá</option>
-                            <option value="0-3000000">Dưới 3 triệu</option>
-                            <option value="3000000-5000000">3 - 5 triệu</option>
-                        </select>
-                        <select name="areaRange">
-                            <option value="">Diện tích</option>
-                            <option value="0-30">Dưới 30 m²</option>
-                            <option value="30-50">30 - 50 m²</option>
-                        </select>
-                    </div>
-                </form>
+            <%-- Trong home.jsp --%>
+<div class="search-container">
+    <h4 class="search-title">Tìm kiếm nhà cho thuê</h4>
+    <form action="${pageContext.request.contextPath}/posts" method="get" class="search-form">
+        <div class="search-main-input">
+            <div class="input-group location-input">
+                <i class="fa-solid fa-location-dot"></i>
+                <select name="provinceId">
+                    <option value="">Toàn quốc</option>
+                    <c:forEach items="${provinces}" var="p">
+                        <option value="${p.id}">${p.name}</option>
+                    </c:forEach>
+                </select>
             </div>
+            <div class="input-group keyword-input">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="keyword" placeholder="Tìm kiếm theo từ khóa (sắp có)" disabled>
+            </div>
+            <button type="submit" class="btn btn-search">Tìm kiếm</button>
+        </div>
+        <div class="search-filters">
+            <%-- Filter 1: Loại nhà đất (Checkbox Dropdown) --%>
+            <div class="filter-dropdown">
+                <button type="button" class="filter-dropdown-btn">
+                    <span>Loại nhà đất</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="filter-dropdown-content checkbox-list">
+                    <div class="dropdown-actions">
+                        <span class="choose-all">Chọn tất cả</span>
+                        <span class="clear-all">Bỏ chọn</span>
+                    </div>
+                    <c:forEach items="${categories}" var="cat">
+                        <label><input type="checkbox" name="categoryId" value="${cat.id}"> ${cat.name}</label>
+                    </c:forEach>
+                </div>
+            </div>
+            <%-- Filter 2: Mức giá (Slider mô phỏng) --%>
+            <div class="filter-dropdown">
+                <button type="button" class="filter-dropdown-btn">
+                    <span>Mức giá</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                 <div class="filter-dropdown-content range-slider">
+                    <label for="priceMin">Từ</label>
+                    <input type="number" name="priceMin" placeholder="0" min="0">
+                     <label for="priceMax">Đến</label>
+                    <input type="number" name="priceMax" placeholder="Không giới hạn">
+                    <%-- Placeholder for a real slider --%>
+                </div>
+            </div>
+            <%-- Filter 3: Diện tích (Slider mô phỏng) --%>
+            <div class="filter-dropdown">
+                 <button type="button" class="filter-dropdown-btn">
+                    <span>Diện tích</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="filter-dropdown-content range-slider">
+                    <label for="areaMin">Từ (m²)</label>
+                    <input type="number" name="areaMin" placeholder="0" min="0">
+                     <label for="areaMax">Đến (m²)</label>
+                    <input type="number" name="areaMax" placeholder="Không giới hạn">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
         </section>
 
         <%-- PHẦN NỘI DUNG CHÍNH --%>

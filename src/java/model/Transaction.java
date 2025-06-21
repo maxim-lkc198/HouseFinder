@@ -17,6 +17,7 @@ public class Transaction {
     private String referenceCode;
     private Long relatedPostId; // can be null
     private LocalDateTime createdAt;
+    private Long relatedMembershipId;
     
     // Optional: for holding the related User object if needed
     private User user; 
@@ -80,6 +81,14 @@ public class Transaction {
         return status;
     }
 
+    public Long getRelatedMembershipId() {
+        return relatedMembershipId;
+    }
+    
+    public void setRelatedMembershipId(Long relatedMembershipId) {
+        this.relatedMembershipId = relatedMembershipId;
+    }
+    
     public void setStatus(String status) {
         this.status = status;
     }

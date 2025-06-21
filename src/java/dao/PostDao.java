@@ -115,12 +115,25 @@ public class PostDao {
             ps.setLong(4, postId);
             
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
         }
-    }
 
+    public boolean updatePostStatus(long postId, String newStatus) {
+    String sql = "UPDATE posts SET status = ? WHERE id = ?";
+    try (Connection conn = DBContext.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setString(1, newStatus);
+        ps.setLong(2, postId);
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
+    
     // --- Helper Methods ---
 
     // Phương thức helper để set các tham số cho PreparedStatement
