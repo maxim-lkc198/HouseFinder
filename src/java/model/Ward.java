@@ -4,22 +4,25 @@
  */
 package model;
 
-public class Province {
+public class Ward {
     private int id;
     private String name;
     private String prefix;
     private String slug;
+    private int districtId;
 
     // Constructors
-    public Province() {}
+    public Ward() {}
 
-    public Province(int id, String name, String prefix, String slug) {
+    public Ward(int id, String name, String prefix, String slug, int districtId) {
         this.id = id;
         this.name = name;
         this.prefix = prefix;
         this.slug = slug;
+        this.districtId = districtId;
     }
 
+    // Getters and Setters
     public int getId() {
         return id;
     }
@@ -51,4 +54,13 @@ public class Province {
     public void setSlug(String slug) {
         this.slug = slug;
     }
+
+    public int getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(int districtId) {
+        this.districtId = districtId;
+    }
+
 }

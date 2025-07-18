@@ -1,4 +1,6 @@
-[
+{
+  "version": "1.0",
+  "provinces":[
     [
         "89", "An Giang", "Tỉnh", "An Giang",
         [
@@ -13837,3 +13839,4 @@
         ]
     ]
 ]
+}

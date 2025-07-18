@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.http.Part;
 import model.Post;
-import model.User;
+import model.Account;
 
 public interface PostService {
     /**
@@ -21,7 +21,7 @@ public interface PostService {
      * @throws IOException If image upload fails.
      * @throws IllegalStateException If user exceeds post limit.
      */
-    long submitNewPost(Post post, List<Part> imageParts, String thumbnailInputName, User currentUser) throws IOException, IllegalStateException;
+    long submitNewPost(Post post, List<Part> imageParts, String thumbnailInputName, Account currentUser) throws IOException, IllegalStateException;
 
-    void payForDraftPost(long postId, User user);
+    void payForDraftPost(long postId, Account user);
 }

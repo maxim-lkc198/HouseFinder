@@ -12,71 +12,102 @@ import java.util.List;
 import jakarta.servlet.http.Part;
 import model.Image;
 import model.Post;
-import model.User;
+import model.Account;
 import service.ImageUploadService;
 import service.PostService;
 import constant.PostStatus;
+import dao.TransactionDao;
+import dao.AccountDao;
+import model.Transaction;
 import service.PaymentService; // Thêm service thanh toán
+import service.PostPricingService;
 
-public class PostServiceImpl implements PostService {
 
-    private final PostDao postDao = new PostDao();
-    private final ImageDao imageDao = new ImageDao();
-    private final ImageUploadService imageUploadService = new ImageUploadServiceImpl();
-    private final PaymentService paymentService = new PaymentServiceImpl(); // Khởi tạo PaymentService
+  public class PostServiceImpl implements PostService {
+      private PostDao postDao;
+      private ImageDao imageDao;
+      private ImageUploadService imageUploadService;
+      private PaymentService paymentService;
+      private PostPricingService pricingService;
+      private TransactionDao transactionDao;
+      private AccountDao userDao;
 
-    @Override
-    public long submitNewPost(Post post, List<Part> imageParts, String thumbnailIdentifier, User currentUser)
-            throws IOException, IllegalStateException {
-        
-        // Luôn coi là PAID_LISTING trong Iteration 1
-        post.setSourceType("PAID_LISTING");
-        post.setStatus(PostStatus.DRAFT_AWAITING_PAYMENT); // Tạo bài đăng với trạng thái nháp
+      public PostServiceImpl() {
+          postDao = new PostDao();
+          imageDao = new ImageDao();
+          imageUploadService = new ImageUploadServiceImpl();
+          paymentService = new PaymentServiceImpl();
+          pricingService = new PostPricingServiceImpl();
+          transactionDao = new TransactionDao();
+          userDao = new AccountDao();
+      }
 
-        // Tạo bài đăng và lấy postId
-        long newPostId = postDao.createPost(post);
-        if (newPostId == -1) {
-            throw new IOException("Không thể tạo bản ghi bài đăng.");
-        }
+      @Override
+      public long submitNewPost(Post post, List<Part> imageParts, String thumbnailIdentifier, Account currentUser) throws IOException {
+          post.setSourceType("PAID_LISTING");
+          post.setLegalStatus("NOT_SUBMITTED");
 
-        // Tính toán chi phí
-        BigDecimal calculatedFee = calculateFee(post);
+          BigDecimal cost = pricingService.calculateTotalCost(post.getListingTypeCode(), post.getDisplayDurationDays());
+          boolean paymentSuccess = paymentService.chargeForListing(currentUser, cost, post.getId());
 
-        // Gọi PaymentService để xử lý thanh toán
-        boolean paymentSuccess = paymentService.chargeForListing(currentUser, calculatedFee, newPostId);
+          if (paymentSuccess) {
+              post.setUserId(currentUser.getId());
+              post.setStatus(PostStatus.PENDING_APPROVAL);
+              long newPostId = postDao.createPost(post);
+              if (newPostId == -1) {
+                  paymentService.refundListingFee(currentUser, cost, newPostId, "Hoàn tiền do lỗi hệ thống");
+                  throw new IOException("Không thể tạo bản ghi bài đăng sau khi đã thanh toán.");
+              }
 
-        if (paymentSuccess) {
-            // Thanh toán thành công, cập nhật trạng thái bài đăng
-            post.setStatus(PostStatus.PENDING_APPROVAL);
-            postDao.updatePostStatus(newPostId, PostStatus.PENDING_APPROVAL);
+              List<Image> uploadedImages = imageUploadService.uploadPostImages(imageParts, newPostId, thumbnailIdentifier);
+              if (!uploadedImages.isEmpty()) {
+                  imageDao.createImages(uploadedImages);
+              }
 
-            // Upload và lưu ảnh
-            List<Image> uploadedImages = imageUploadService.uploadPostImages(imageParts, newPostId, thumbnailIdentifier);
-            if (!uploadedImages.isEmpty()) {
-                imageDao.createImages(uploadedImages);
-            }
+              Transaction tx = new Transaction();
+              tx.setUserId(currentUser.getId());
+              tx.setTransactionType("LISTING_FEE_PAYMENT");
+              tx.setAmount(cost.negate());
+              tx.setOriginalAmount(cost);
+              tx.setDescription("Thanh toán cho bài đăng ID: " + newPostId);
+              tx.setStatus("COMPLETED");
+              tx.setRelatedPostId(newPostId);
+              transactionDao.createTransaction(tx);
 
-            return newPostId;
-        } else {
-            // Thanh toán thất bại, hoàn tiền nếu cần
-            paymentService.refundListingFee(currentUser, calculatedFee, newPostId, "Hoàn tiền do lỗi hệ thống");
-            return -2; // Trả về mã đặc biệt cho biết đã lưu nháp
-        }
-    }
+              return newPostId;
+          } else {
+              post.setUserId(currentUser.getId());
+              post.setStatus(PostStatus.DRAFT_AWAITING_PAYMENT);
+              long draftPostId = postDao.createPost(post);
+              return draftPostId > 0 ? -2 : -1;
+          }
+      }
 
-    
-    @Override
-    public void payForDraftPost(long postId, User user) {
-    Post post = postDao.getPostById(postId);
-    if (post.getStatus().equals(PostStatus.DRAFT_AWAITING_PAYMENT)) {
-        BigDecimal fee = calculateFee(post);
-    boolean paymentSuccess = paymentService.chargeForListing(user, fee, postId);
-    if (paymentSuccess) {
-            post.setStatus(PostStatus.PENDING_APPROVAL);
-            postDao.updatePostStatus(postId, PostStatus.PENDING_APPROVAL);
-        }
-    }
-}
+      @Override
+      public void payForDraftPost(long postId, Account user) {
+          Post post = postDao.getPostById(postId);
+          if (post.getStatus().equals(PostStatus.DRAFT_AWAITING_PAYMENT)) {
+              BigDecimal cost = pricingService.calculateTotalCost(post.getListingTypeCode(), post.getDisplayDurationDays());
+              boolean paymentSuccess = paymentService.chargeForListing(user, cost, postId);
+              if (paymentSuccess) {
+                  post.setStatus(PostStatus.PENDING_APPROVAL);
+                  postDao.updatePostStatus(postId, PostStatus.PENDING_APPROVAL);
+
+                  Transaction tx = new Transaction();
+                  tx.setUserId(user.getId());
+                  tx.setTransactionType("LISTING_FEE_PAYMENT");
+                  tx.setAmount(cost.negate());
+                  tx.setOriginalAmount(cost);
+                  tx.setDescription("Thanh toán cho bài đăng nháp ID: " + postId);
+                  tx.setStatus("COMPLETED");
+                  tx.setRelatedPostId(postId);
+                  transactionDao.createTransaction(tx);
+              } else {
+                  throw new IllegalStateException("Thanh toán thất bại do không đủ số dư.");
+              }
+          }
+      }
+  
     
     private BigDecimal calculateFee(Post post) {
         BigDecimal dailyRate = "VIP".equals(post.getListingTypeCode()) ? new BigDecimal("20000") : new BigDecimal("10000");

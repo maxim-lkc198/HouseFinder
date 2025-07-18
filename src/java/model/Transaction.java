@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.math.BigDecimal;
@@ -12,29 +8,28 @@ public class Transaction {
     private long userId;
     private String transactionType;
     private BigDecimal amount;
+    private BigDecimal originalAmount;
     private String description;
     private String status;
     private String referenceCode;
-    private Long relatedPostId; // can be null
-    private LocalDateTime createdAt;
+    private Long relatedPostId;
     private Long relatedMembershipId;
-    
-    // Optional: for holding the related User object if needed
-    private User user; 
+    private LocalDateTime createdAt;
 
     public Transaction() {}
 
-    public Transaction(long id, long userId, String transactionType, BigDecimal amount, String description, String status, String referenceCode, Long relatedPostId, LocalDateTime createdAt, User user) {
+    public Transaction(long id, long userId, String transactionType, BigDecimal amount, BigDecimal originalAmount, String description, String status, String referenceCode, Long relatedPostId, Long relatedMembershipId, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;
         this.transactionType = transactionType;
         this.amount = amount;
+        this.originalAmount = originalAmount;
         this.description = description;
         this.status = status;
         this.referenceCode = referenceCode;
         this.relatedPostId = relatedPostId;
+        this.relatedMembershipId = relatedMembershipId;
         this.createdAt = createdAt;
-        this.user = user;
     }
 
     public long getId() {
@@ -69,6 +64,14 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public BigDecimal getOriginalAmount() {
+        return originalAmount;
+    }
+
+    public void setOriginalAmount(BigDecimal originalAmount) {
+        this.originalAmount = originalAmount;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -81,14 +84,6 @@ public class Transaction {
         return status;
     }
 
-    public Long getRelatedMembershipId() {
-        return relatedMembershipId;
-    }
-    
-    public void setRelatedMembershipId(Long relatedMembershipId) {
-        this.relatedMembershipId = relatedMembershipId;
-    }
-    
     public void setStatus(String status) {
         this.status = status;
     }
@@ -109,6 +104,14 @@ public class Transaction {
         this.relatedPostId = relatedPostId;
     }
 
+    public Long getRelatedMembershipId() {
+        return relatedMembershipId;
+    }
+
+    public void setRelatedMembershipId(Long relatedMembershipId) {
+        this.relatedMembershipId = relatedMembershipId;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -117,12 +120,4 @@ public class Transaction {
         this.createdAt = createdAt;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-    
 }

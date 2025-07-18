@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
-    <%-- Load file CSS riêng của trang auth --%>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/auth.css?v=8.0">
     <title>Đăng Nhập - FindHouse</title>
 </head>
@@ -24,16 +23,16 @@
                 <c:if test="${not empty successMessage}">
                     <div class="success-message"><i class="fa-solid fa-circle-check"></i> ${successMessage}</div>
                 </c:if>
-                 <c:if test="${param.logout == 'true'}">
+                <c:if test="${param.logout == 'true'}">
                     <div class="success-message"><i class="fa-solid fa-circle-check"></i> Bạn đã đăng xuất thành công.</div>
                 </c:if>
 
-                <form action="login" method="post" style="margin-top: 1.5rem;">
+                <form action="login" method="post" style="margin-top: 1.5rem;" onsubmit="return validateLoginForm()">
                     <div class="form-group">
-                        <label for="username">Tên đăng nhập hoặc Email</label>
+                        <label for="usernameOrEmail">Tên đăng nhập hoặc Email</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-user input-icon"></i>
-                            <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập hoặc email" required>
+                            <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="Nhập tên đăng nhập hoặc email" required>
                         </div>
                     </div>
 
@@ -60,5 +59,16 @@
     </div>
     
     <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
+    <script>
+        function validateLoginForm() {
+            var usernameOrEmail = document.getElementById('usernameOrEmail').value.trim();
+            var password = document.getElementById('password').value;
+            if (!usernameOrEmail || !password) {
+                alert('Tên đăng nhập/email và mật khẩu không được để trống.');
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>

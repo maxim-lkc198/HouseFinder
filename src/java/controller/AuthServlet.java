@@ -1,23 +1,19 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
-import java.io.IOException;
-import java.sql.Date;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.User;
+import model.Account;
 import service.AuthService;
 import service.impl.AuthServiceImpl;
 import util.PasswordUtil;
-import dao.UserDao;
+import dao.AccountDao;
 import constant.RoleName;
+
+import java.io.IOException;
 
 @WebServlet(name = "AuthServlet", urlPatterns = {"/register", "/login", "/logout", "/forgot-password", "/reset-password"})
 public class AuthServlet extends HttpServlet {
@@ -74,14 +70,12 @@ public class AuthServlet extends HttpServlet {
         }
     }
 
-    // ========== REGISTER LOGIC ========================================
-
     private void showRegisterPage(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step1_email.jsp").forward(request, response);
     }
-    
-    private void processRegister(HttpServletRequest request, HttpServletResponse response) 
+
+    private void processRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String subAction = request.getParameter("action");
         if ("checkEmail".equals(subAction)) {
@@ -101,8 +95,8 @@ public class AuthServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step1_email.jsp").forward(request, response);
             return;
         }
-        // Tái sử dụng DAO để kiểm tra (tốt hơn là qua service)
-        if (new UserDao().getUserByEmail(email) != null) {
+        AccountDao accountDao = new AccountDao();
+        if (accountDao.getAccountByEmail(email) != null) {
             request.setAttribute("errorMessage", "Email này đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.");
             request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step1_email.jsp").forward(request, response);
             return;
@@ -121,7 +115,6 @@ public class AuthServlet extends HttpServlet {
         String lastName = request.getParameter("lastName");
         String phoneNumber = request.getParameter("phoneNumber");
 
-        // Server-side validation
         if (!password.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "Mật khẩu xác nhận không khớp.");
             request.setAttribute("email", email);
@@ -135,16 +128,16 @@ public class AuthServlet extends HttpServlet {
             return;
         }
 
-        User user = new User();
-        user.setEmail(email);
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setPhoneNumber(phoneNumber);
-        
+        Account account = new Account();
+        account.setEmail(email);
+        account.setUsername(username);
+        account.setPassword(password);
+        account.setFirstName(firstName);
+        account.setLastName(lastName);
+        account.setPhoneNumber(phoneNumber);
+
         try {
-            boolean success = authService.registerUser(user);
+            boolean success = authService.registerUser(account);
             if (success) {
                 request.getSession().setAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
                 response.sendRedirect(request.getContextPath() + "/login");
@@ -159,8 +152,6 @@ public class AuthServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/auth/register_step2_details.jsp").forward(request, response);
         }
     }
-    
-    // ========== LOGIN & LOGOUT LOGIC ========================================
 
     private void showLoginPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
@@ -172,15 +163,16 @@ public class AuthServlet extends HttpServlet {
     }
 
     private void processLogin(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String username = request.getParameter("username");
+        String usernameOrEmail = request.getParameter("usernameOrEmail");
         String password = request.getParameter("password");
-        User user = authService.loginUser(username, password);
+        Account account = authService.loginUser(usernameOrEmail, password);
 
-        if (user != null) {
+        if (account != null) {
             HttpSession session = request.getSession();
-            session.setAttribute("loggedInUser", user);
-            
-            if (RoleName.ADMIN.equals(user.getRole().getName())) {
+            session.setAttribute("loggedInUser", account);
+
+            String roleName = account.getRole() != null ? account.getRole().getName() : RoleName.USER;
+            if (RoleName.ADMIN.equals(roleName)) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else {
                 response.sendRedirect(request.getContextPath() + "/home");
@@ -190,7 +182,7 @@ public class AuthServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/auth/login.jsp").forward(request, response);
         }
     }
-    
+
     private void processLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -198,25 +190,23 @@ public class AuthServlet extends HttpServlet {
         }
         response.sendRedirect(request.getContextPath() + "/login?logout=true");
     }
-    
-    // ========== FORGOT & RESET PASSWORD LOGIC =============================
-    
+
     private void showForgotPasswordPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("/WEB-INF/jsp/auth/forgotPassword.jsp").forward(request, response);
     }
-    
+
     private void processForgotPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         authService.generatePasswordResetToken(email);
         request.setAttribute("message", "Nếu email của bạn tồn tại, một hướng dẫn đặt lại mật khẩu đã được gửi.");
         request.getRequestDispatcher("/WEB-INF/jsp/auth/forgotPassword.jsp").forward(request, response);
     }
-    
+
     private void showResetPasswordPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String token = request.getParameter("token");
-        User user = authService.validatePasswordResetToken(token);
-        
-        if (user != null) {
+        Account account = authService.validatePasswordResetToken(token);
+
+        if (account != null) {
             request.setAttribute("token", token);
             request.getRequestDispatcher("/WEB-INF/jsp/auth/resetPassword.jsp").forward(request, response);
         } else {
@@ -224,12 +214,12 @@ public class AuthServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/auth/forgotPassword.jsp").forward(request, response);
         }
     }
-    
+
     private void processResetPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String token = request.getParameter("token");
         String newPassword = request.getParameter("newPassword");
         String confirmPassword = request.getParameter("confirmPassword");
-        
+
         if (!newPassword.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "Mật khẩu xác nhận không khớp.");
             request.setAttribute("token", token);
@@ -242,9 +232,9 @@ public class AuthServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/jsp/auth/resetPassword.jsp").forward(request, response);
             return;
         }
-        
+
         boolean success = authService.resetPassword(token, newPassword);
-        
+
         if (success) {
             request.getSession().setAttribute("successMessage", "Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập.");
             response.sendRedirect(request.getContextPath() + "/login");

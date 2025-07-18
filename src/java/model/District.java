@@ -4,20 +4,22 @@
  */
 package model;
 
-public class Province {
+public class District {
     private int id;
     private String name;
     private String prefix;
     private String slug;
+    private int provinceId;
 
     // Constructors
-    public Province() {}
+    public District() {}
 
-    public Province(int id, String name, String prefix, String slug) {
+    public District(int id, String name, String prefix, String slug, int provinceId) {
         this.id = id;
         this.name = name;
         this.prefix = prefix;
         this.slug = slug;
+        this.provinceId = provinceId;
     }
 
     public int getId() {
@@ -51,4 +53,14 @@ public class Province {
     public void setSlug(String slug) {
         this.slug = slug;
     }
+
+    public int getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(int provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    
 }

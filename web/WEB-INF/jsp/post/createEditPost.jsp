@@ -6,8 +6,8 @@
 <html>
 <head>
     <jsp:include page="/WEB-INF/jsp/common/header.jsp" />
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form_wizard.css">
-    <title>Đăng Tin Mới - FindHouse</title>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form_wizard.css?v=8.1">
+    <title>Đăng Tin Mới - HouseFinder</title>
 </head>
 <body>
     <div class="container page-container">
@@ -29,9 +29,8 @@
             </div>
 
             <div class="wizard-content">
-                <%-- ============================ TAB 1: THÔNG TIN BẤT ĐỘNG SẢN ============================ --%>
+                <%-- Tab 1: Thông tin Bất động sản --%>
                 <div id="tab-1" class="wizard-tab active">
-                    <%-- Phần 1.1: Địa chỉ --%>
                     <div class="form-section" id="section-location">
                         <h4>1.1 Địa chỉ bất động sản</h4>
                         <div class="form-grid-2">
@@ -39,16 +38,22 @@
                                 <label for="province">Tỉnh/Thành phố *</label>
                                 <select id="province" name="province" required>
                                     <option value="">-- Chọn Tỉnh/Thành --</option>
-                                    <c:forEach items="${provinces}" var="p"><option value="${p.id}">${p.name}</option></c:forEach>
+                                    <c:forEach items="${provinces}" var="p">
+                                        <option value="${p.id}">${p.name}</option>
+                                    </c:forEach>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="district">Quận/Huyện *</label>
-                                <input type="text" id="district" name="district" required>
+                                <select id="district" name="district" required>
+                                    <option value="">-- Chọn Quận/Huyện --</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="ward">Phường/Xã *</label>
-                                <input type="text" id="ward" name="ward" required>
+                                <select id="ward" name="ward" required>
+                                    <option value="">-- Chọn Phường/Xã --</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="street">Đường/Phố *</label>
@@ -57,12 +62,11 @@
                         </div>
                         <div class="form-group">
                             <label for="addressDetail">Địa chỉ hiển thị trên tin đăng *</label>
-                            <input type="text" id="addressDetail" name="addressDetail" placeholder="Địa chỉ sẽ tự động được tạo ở đây...">
+                            <input type="text" id="addressDetail" name="addressDetail" placeholder="Địa chỉ sẽ tự động được tạo ở đây..." required>
                             <p class="input-hint">Bạn có thể chỉnh sửa lại địa chỉ này nếu cần.</p>
                         </div>
                     </div>
 
-                    <%-- Phần 1.2: Thông tin chính --%>
                     <div class="form-section hidden" id="section-basics">
                         <h4>1.2 Thông tin cơ bản</h4>
                         <div class="form-grid-3">
@@ -70,7 +74,9 @@
                                 <label for="category">Loại BĐS *</label>
                                 <select id="category" name="category" required>
                                     <option value="">-- Chọn Loại BĐS --</option>
-                                    <c:forEach items="${categories}" var="cat"><option value="${cat.id}">${cat.name}</option></c:forEach>
+                                    <c:forEach items="${categories}" var="cat">
+                                        <option value="${cat.id}">${cat.name}</option>
+                                    </c:forEach>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -84,7 +90,6 @@
                         </div>
                     </div>
                     
-                    <%-- Phần 1.3: Thông tin bổ sung --%>
                     <div class="form-section hidden" id="section-details">
                         <h4>1.3 Thông tin bổ sung (tùy chọn)</h4>
                         <div class="form-grid-4">
@@ -121,7 +126,6 @@
                         </div>
                     </div>
 
-                    <%-- Phần 1.4: Tiêu đề và Liên hệ --%>
                     <div class="form-section hidden" id="section-finalize">
                         <h4>1.4 Tiêu đề & Thông tin liên hệ</h4>
                         <div class="form-group">
@@ -149,7 +153,7 @@
                     </div>
                 </div>
 
-                <%-- ============================ TAB 2: HÌNH ẢNH ============================ --%>
+                <%-- Tab 2: Hình ảnh --%>
                 <div id="tab-2" class="wizard-tab">
                     <h4>Tải lên hình ảnh và video</h4>
                     <p>Tải lên ít nhất 1 ảnh, tối đa 10 ảnh. Click vào ngôi sao <i class="fa-solid fa-star"></i> để chọn ảnh làm ảnh đại diện.</p>
@@ -164,7 +168,7 @@
                     <input type="hidden" name="thumbnailIdentifier" id="thumbnailIdentifier">
                 </div>
 
-                <%-- ============================ TAB 3: CẤU HÌNH ============================ --%>
+                <%-- Tab 3: Cấu hình --%>
                 <div id="tab-3" class="wizard-tab">
                     <h4>Cấu hình hiển thị</h4>
                     <p>Lựa chọn loại tin và thời gian hiển thị phù hợp với nhu cầu của bạn.</p>
@@ -188,32 +192,20 @@
                         </div>
                         <div class="config-section">
                             <h5>Thời gian đăng</h5>
-                            <label class="config-option-box">
-                                <input type="radio" name="displayDuration" value="7">
-                                <div class="option-content">
-                                    <strong>7 ngày</strong>
-                                    <span>(Giá/ngày: 2,000đ)</span>
-                                </div>
-                            </label>
-                            <label class="config-option-box">
-                                <input type="radio" name="displayDuration" value="15" checked>
-                                <div class="option-content">
-                                    <strong>15 ngày</strong>
-                                    <span>(Giá/ngày: 1,800đ)</span>
-                                </div>
-                            </label>
-                            <label class="config-option-box">
-                                <input type="radio" name="displayDuration" value="30">
-                                <div class="option-content">
-                                    <strong>30 ngày</strong>
-                                    <span>(Giá/ngày: 1,500đ)</span>
-                                </div>
-                            </label>
+                            <c:forEach items="${pricingOptions}" var="pricing">
+                                <label class="config-option-box">
+                                    <input type="radio" name="displayDuration" value="${pricing.durationDays}" ${pricing.durationDays == 15 ? 'checked' : ''}>
+                                    <div class="option-content">
+                                        <strong>${pricing.durationDays} ngày</strong>
+                                        <span>(Giá/ngày: <fmt:formatNumber value="${pricing.pricePerDay}" pattern="#,##0" /> VNĐ, Giảm: ${pricing.discountPercentage}%)</span>
+                                    </div>
+                                </label>
+                            </c:forEach>
                         </div>
                     </div>
                 </div>
 
-                <%-- ============================ TAB 4: XÁC NHẬN ============================ --%>
+                <%-- Tab 4: Xác nhận --%>
                 <div id="tab-4" class="wizard-tab">
                     <h4>Xác nhận và Thanh toán</h4>
                     <p>Vui lòng xem lại thông tin trước khi gửi duyệt. Sau khi gửi, bạn sẽ cần thanh toán (nếu là tin mua lẻ) hoặc sử dụng quyền lợi từ gói hội viên.</p>
@@ -239,6 +231,6 @@
     </div>
     
     <jsp:include page="/WEB-INF/jsp/common/footer.jsp" />
-    <script src="${pageContext.request.contextPath}/js/post_wizard.js"></script>
+    <script src="${pageContext.request.contextPath}/js/post_wizard.js?v=8.1"></script>
 </body>
 </html>

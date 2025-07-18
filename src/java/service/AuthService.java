@@ -4,17 +4,17 @@
  */
 package service;
 
-import model.User;
+import model.Account;
 
 public interface AuthService {
 
     /**
      * Registers a new user.
-     * @param user The User object from the registration form.
+     * @param account
      * @return true if successful.
      * @throws IllegalArgumentException if username/email already exists.
      */
-    boolean registerUser(User user) throws IllegalArgumentException;
+    boolean registerUser(Account account) throws IllegalArgumentException;
 
     /**
      * Authenticates a user.
@@ -22,7 +22,7 @@ public interface AuthService {
      * @param password The plain text password entered.
      * @return The authenticated User object if credentials are correct and user is active, otherwise null.
      */
-    User loginUser(String username, String password);
+    Account loginUser(String username, String password);
 
     /**
      * Generates a password reset token and sends a reset link to the user's email.
@@ -35,7 +35,7 @@ public interface AuthService {
      * @param token The token from the reset link.
      * @return The User object associated with the token if it's valid and not expired, otherwise null.
      */
-    User validatePasswordResetToken(String token);
+    Account validatePasswordResetToken(String token);
     
     /**
      * Resets the user's password using a valid token.

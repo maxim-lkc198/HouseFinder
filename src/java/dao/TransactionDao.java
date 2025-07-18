@@ -1,65 +1,61 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
+
+import constant.TransactionType;
+import model.Transaction;
+import util.DBContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-import model.Transaction;
-import util.DBContext;
 
 public class TransactionDao {
 
-    /**
-     * Tạo một giao dịch mới.
-     * @param transaction Đối tượng Transaction cần lưu.
-     * @return true nếu thành công, false nếu thất bại.
-     */
-    public boolean createTransaction(Transaction transaction) {
-        String sql = "INSERT INTO transactions (user_id, transaction_type, amount, description, status, reference_code, related_post_id) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
+    public boolean createTransaction(Transaction transaction, Connection conn) throws SQLException {
+        String sql = "INSERT INTO transactions (user_id, transaction_type, amount, original_amount, description, status, reference_code, related_post_id, related_membership_id) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, transaction.getUserId());
             ps.setString(2, transaction.getTransactionType());
             ps.setBigDecimal(3, transaction.getAmount());
-            ps.setString(4, transaction.getDescription());
-            ps.setString(5, transaction.getStatus());
-            ps.setString(6, transaction.getReferenceCode());
-            
+            ps.setBigDecimal(4, transaction.getOriginalAmount());
+            ps.setString(5, transaction.getDescription());
+            ps.setString(6, transaction.getStatus());
+            ps.setString(7, transaction.getReferenceCode());
             if (transaction.getRelatedPostId() != null) {
-                ps.setLong(7, transaction.getRelatedPostId());
+                ps.setLong(8, transaction.getRelatedPostId());
             } else {
-                ps.setNull(7, java.sql.Types.BIGINT);
+                ps.setNull(8, Types.BIGINT);
             }
-            
+            if (transaction.getRelatedMembershipId() != null) {
+                ps.setLong(9, transaction.getRelatedMembershipId());
+            } else {
+                ps.setNull(9, Types.BIGINT);
+            }
             return ps.executeUpdate() > 0;
+        }
+    }
+
+    public boolean createTransaction(Transaction transaction) {
+        try (Connection conn = DBContext.getConnection()) {
+            return createTransaction(transaction, conn);
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    /**
-     * Lấy lịch sử giao dịch của một user.
-     * @param userId ID của user.
-     * @return Danh sách các đối tượng Transaction.
-     */
     public List<Transaction> getTransactionsByUserId(long userId) {
         List<Transaction> transactions = new ArrayList<>();
         String sql = "SELECT * FROM transactions WHERE user_id = ? ORDER BY created_at DESC";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            
             ps.setLong(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()) {
+                while (rs.next()) {
                     transactions.add(mapRowToTransaction(rs));
                 }
             }
@@ -75,14 +71,19 @@ public class TransactionDao {
         tx.setUserId(rs.getLong("user_id"));
         tx.setTransactionType(rs.getString("transaction_type"));
         tx.setAmount(rs.getBigDecimal("amount"));
+        tx.setOriginalAmount(rs.getBigDecimal("original_amount"));
         tx.setDescription(rs.getString("description"));
         tx.setStatus(rs.getString("status"));
         tx.setReferenceCode(rs.getString("reference_code"));
-        tx.setRelatedPostId(rs.getLong("related_post_id"));
-        if(rs.wasNull()){
-            tx.setRelatedPostId(null);
+        long relatedPostId = rs.getLong("related_post_id");
+        if (!rs.wasNull()) {
+            tx.setRelatedPostId(relatedPostId);
+        }
+        long relatedMembershipId = rs.getLong("related_membership_id");
+        if (!rs.wasNull()) {
+            tx.setRelatedMembershipId(relatedMembershipId);
         }
         tx.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         return tx;
     }
-}   
+}

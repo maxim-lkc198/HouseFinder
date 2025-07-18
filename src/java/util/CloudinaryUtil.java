@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package util;
 
 import com.cloudinary.Cloudinary;
@@ -18,14 +14,38 @@ public class CloudinaryUtil {
     private static Properties secretProps = new Properties();
 
     static {
-        try (InputStream input = CloudinaryUtil.class.getClassLoader().getResourceAsStream("secrets.properties")) {
-            if (input == null) {
-                System.err.println("!!! FATAL ERROR: secrets.properties NOT FOUND ON CLASSPATH !!!");
-            } else {
-                secretProps.load(input);
+        // Try multiple resource paths
+        String[] possiblePaths = {
+            "secrets.properties",
+            "/secrets.properties",
+            "WEB-INF/secrets.properties",
+            "util/secrets.properties"
+        };
+        InputStream input = null;
+        for (String path : possiblePaths) {
+            try {
+                input = CloudinaryUtil.class.getClassLoader().getResourceAsStream(path);
+                if (input != null) {
+                    secretProps.load(input);
+                    System.out.println("CloudinaryUtil: Loaded secrets.properties from path: " + path);
+                    break;
+                }
+            } catch (IOException ex) {
+                System.err.println("CloudinaryUtil: Failed to load secrets.properties from path: " + path);
+            } finally {
+                if (input != null) {
+                    try {
+                        input.close();
+                    } catch (IOException e) {
+                        System.err.println("CloudinaryUtil: Error closing input stream for path: " + path);
+                    }
+                }
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        }
+
+        if (input == null) {
+            System.err.println("!!! FATAL ERROR: secrets.properties NOT FOUND ON CLASSPATH !!!");
+            throw new IllegalStateException("secrets.properties file not found in classpath");
         }
     }
 
@@ -35,7 +55,11 @@ public class CloudinaryUtil {
             String apiKey = secretProps.getProperty("cloudinary.api_key");
             String apiSecret = secretProps.getProperty("cloudinary.api_secret");
 
-            if (cloudName == null || apiKey == null || apiSecret == null) {
+            if (cloudName == null || cloudName.trim().isEmpty() || 
+                apiKey == null || apiKey.trim().isEmpty() || 
+                apiSecret == null || apiSecret.trim().isEmpty()) {
+                System.err.println("CloudinaryUtil: Missing or empty credentials - cloud_name: " + cloudName + 
+                                 ", api_key: " + apiKey + ", api_secret: [hidden]");
                 throw new IllegalStateException("Cloudinary credentials are not configured in secrets.properties.");
             }
 
@@ -43,8 +67,9 @@ public class CloudinaryUtil {
             config.put("cloud_name", cloudName);
             config.put("api_key", apiKey);
             config.put("api_secret", apiSecret);
-            config.put("secure", true); 
+            config.put("secure", true);
 
+            System.out.println("CloudinaryUtil: Initializing Cloudinary with cloud_name: " + cloudName);
             synchronized (CloudinaryUtil.class) {
                 if (cloudinaryInstance == null) {
                     cloudinaryInstance = new Cloudinary(config);
@@ -54,14 +79,6 @@ public class CloudinaryUtil {
         return cloudinaryInstance;
     }
 
-    /**
-     * Uploads an image file from a byte array to a specified folder on Cloudinary.
-     * @param fileBytes The byte array of the file.
-     * @param folder The target folder on Cloudinary (e.g., "housefinder/posts").
-     * @param publicIdPrefix Optional prefix for the public_id. A random string will be appended.
-     * @return A Map containing the "secure_url" and "public_id" of the uploaded image.
-     * @throws IOException If the file bytes are empty or an upload error occurs.
-     */
     public static Map<String, String> uploadImageBytes(byte[] fileBytes, String folder, String publicIdPrefix) throws IOException {
         if (fileBytes == null || fileBytes.length == 0) {
             throw new IOException("File bytes are empty or null.");
@@ -71,41 +88,33 @@ public class CloudinaryUtil {
         
         Map<String, Object> params = new HashMap<>();
         params.put("folder", folder);
-        // Let Cloudinary generate a random public_id to avoid overwrites
-        // If you want to control the name, you can add 'public_id' parameter
-        // params.put("public_id", publicIdPrefix + "_" + System.currentTimeMillis());
         params.put("resource_type", "auto");
 
+        System.out.println("CloudinaryUtil: Uploading image to folder: " + folder);
         Map uploadResult = cloudinary.uploader().upload(fileBytes, params);
         
         Map<String, String> result = new HashMap<>();
         result.put("secure_url", (String) uploadResult.get("secure_url"));
         result.put("public_id", (String) uploadResult.get("public_id"));
+        System.out.println("CloudinaryUtil: Image uploaded - secure_url: " + result.get("secure_url") + 
+                          ", public_id: " + result.get("public_id"));
         return result;
     }
-    
-    
 
-    /**
-     * Deletes an image from Cloudinary using its public ID.
-     * @param publicId The full public ID of the image to delete (including folder path).
-     * @return true if deletion was successful or the image didn't exist.
-     */
     public static boolean deleteImage(String publicId) {
-        if (publicId == null || publicId.isEmpty()) {
-            return true; // Nothing to delete
+        if (publicId == null || publicId.trim().isEmpty()) {
+            System.out.println("CloudinaryUtil: No public_id provided for deletion");
+            return true;
         }
         try {
             Cloudinary cloudinary = getInstance();
-            // The destroy method deletes the resource.
             Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
             String deletionResult = (String) result.get("result");
             
             System.out.println("CloudinaryUtil: Deletion result for '" + publicId + "': " + deletionResult);
-            // "ok" means successfully deleted, "not found" is also a success from our perspective.
             return "ok".equals(deletionResult) || "not found".equals(deletionResult);
         } catch (IOException e) {
-            System.err.println("CloudinaryUtil: Error deleting image with public_id '" + publicId + "'.");
+            System.err.println("CloudinaryUtil: Error deleting image with public_id '" + publicId + "': " + e.getMessage());
             e.printStackTrace();
             return false;
         }
